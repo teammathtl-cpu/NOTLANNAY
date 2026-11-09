@@ -1,0 +1,6 @@
+{
+  "name": "Hanoi Tour Explorer - THPT Thăng Long",
+  "description": "Bản đồ đồ thị du lịch và lịch trình di sản Hà Nội kết nối THPT Thăng Long với các danh lam thắng cảnh, tính toán đường đi ngắn nhất, tour tham quan và thuyết minh song ngữ.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
