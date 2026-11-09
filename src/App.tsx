@@ -129,8 +129,8 @@ export default function App() {
     }
 
     setActivePath(calculatedPath);
-    setCurrentStep('result');
-    confetti({ particleCount: 45, spread: 70, origin: { y: 0.75 } });
+    setCurrentStep('preview');
+    confetti({ particleCount: 40, spread: 65, origin: { y: 0.75 } });
   };
 
   const handleUpdateLocation = (updatedLoc: TouristLocation) => {

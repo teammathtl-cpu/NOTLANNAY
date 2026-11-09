@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { MiniLocationMap } from './MiniLocationMap';
+import { SubgraphPreview } from './SubgraphPreview';
 
 interface GuideShellProps {
   locations: TouristLocation[];
@@ -220,7 +221,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
 
   // Auto-apply path to map when plan changes
   useEffect(() => {
-    if (activePlan && currentStep === 'result') {
+    if (activePlan && (currentStep === 'preview' || currentStep === 'result')) {
       onApplyPathToMap(activePlan.path);
     }
   }, [activePlan, currentStep]);
@@ -282,8 +283,8 @@ export const GuideShell: React.FC<GuideShellProps> = ({
     if (activePlan) {
       onApplyPathToMap(activePlan.path);
     }
-    setCurrentStep('result');
-    confetti({ particleCount: 45, spread: 70, origin: { y: 0.75 } });
+    setCurrentStep('preview');
+    confetti({ particleCount: 40, spread: 65, origin: { y: 0.75 } });
   };
 
   // Toggle location selection
@@ -891,73 +892,24 @@ export const GuideShell: React.FC<GuideShellProps> = ({
           </div>
         )}
 
-        {/* STEP 2: XEM TRƯỚC ĐỒ THỊ */}
+        {/* STEP 2: XEM TRƯỚC ĐỒ THỊ & DẠNG ĐƯỜNG ĐI */}
         {currentStep === 'preview' && (
-          <div className="space-y-4">
-            <div className="bg-white border border-[#d7ccbb] p-4 rounded-2xl space-y-3">
-              <h3 className="font-extrabold text-sm text-[#133654] flex items-center gap-2">
-                <Layers className="w-4 h-4 text-[#d7a15e]" />
-                <span>{isVi ? 'Tập hợp các đỉnh được chọn (Sub-graph Nodes)' : 'Selected Subgraph Nodes'}</span>
-              </h3>
-              <p className="text-xs text-slate-600">
-                {isVi 
-                  ? `Đồ thị bài toán sẽ chỉ duyệt trên ${selectedIds.length} đỉnh này. Thuật toán tìm phương án tối ưu theo các cạnh thực tế kết nối giữa chúng.` 
-                  : `Graph optimization will strictly evaluate these ${selectedIds.length} nodes.`}
-              </p>
-
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-[#e6ded1]">
-                {selectedIds.map((id, idx) => {
-                  const loc = locationMap.get(id);
-                  const isSchool = id === 'TL';
-                  const isEnd = id === endId;
-
-                  return (
-                    <span
-                      key={id}
-                      onClick={() => loc && onOpenDetailModal(loc)}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold cursor-pointer transition-colors ${
-                        isSchool
-                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                          : isEnd
-                          ? 'bg-rose-100 text-rose-900 border border-rose-300'
-                          : 'bg-slate-100 text-slate-800 hover:bg-slate-200 border border-slate-300'
-                      }`}
-                    >
-                      <span className="w-4 h-4 rounded-full bg-white text-slate-700 flex items-center justify-center text-[10px]">
-                        {idx + 1}
-                      </span>
-                      <span>{loc?.label || id}</span>
-                      {isSchool && <span className="text-[10px] text-amber-700 font-extrabold">(Xuất phát)</span>}
-                      {isEnd && <span className="text-[10px] text-rose-700 font-extrabold">(Đích)</span>}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Run action button */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 flex items-center justify-between">
-              <div>
-                <div className="text-xs font-bold text-amber-950">
-                  {isVi ? 'Đã đủ dữ liệu để giải bài toán đồ thị' : 'Ready to solve graph problem'}
-                </div>
-                <div className="text-[11px] text-amber-800">
-                  {isVi ? 'Nhấn để tính toán đường đi tối ưu và xem so sánh các phương án.' : 'Click to run optimal graph solution.'}
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setCurrentStep('result');
-                  confetti({ particleCount: 45, spread: 80, origin: { y: 0.75 } });
-                }}
-                className={`px-4 py-2 rounded-xl ${modeConfig.btnBg} text-white font-black text-xs sm:text-sm shadow-md flex items-center gap-2 cursor-pointer`}
-              >
-                <span>{isVi ? 'Chạy kết quả ngay' : 'Compute Result'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+          <SubgraphPreview
+            locations={locations}
+            routes={routes}
+            selectedIds={selectedIds}
+            startId={startId}
+            endId={endId}
+            previewPath={activePlan?.path || []}
+            currentMode={currentMode}
+            language={language}
+            onSelectLocation={loc => onOpenDetailModal(loc, 'info')}
+            onAdvanceToResult={() => {
+              setCurrentStep('result');
+              confetti({ particleCount: 45, spread: 80, origin: { y: 0.75 } });
+            }}
+            onBackToSelect={() => setCurrentStep('select')}
+          />
         )}
 
         {/* STEP 3: KẾT QUẢ & LỜI GIẢI */}
