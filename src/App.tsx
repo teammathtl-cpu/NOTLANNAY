@@ -22,7 +22,8 @@ import {
 import { 
   solveHamiltonianCycle, 
   solveHamiltonianPath, 
-  runDijkstraWithSteps 
+  runDijkstraWithSteps,
+  getDirectDistance 
 } from './utils/graphAlgorithms';
 import { 
   MapPin, 
@@ -55,7 +56,7 @@ export default function App() {
 
   // Active path to highlight across Map & Graph
   const [activePath, setActivePath] = useState<string[]>([
-    'TL', 'BH', 'CDX', 'HTTL', 'VMQTG', 'TL'
+    'TL', 'DHBKHN', 'CVTN', 'VMQTG', 'LCT', 'HT', 'TL'
   ]);
 
   // Selected location for detail modal and initial active tab ('info' | 'map' | 'distances')
@@ -75,8 +76,8 @@ export default function App() {
     for (let i = 0; i < activePath.length - 1; i++) {
       const u = activePath[i];
       const v = activePath[i + 1];
-      const r = routes.find(rt => (rt.from === u && rt.to === v) || (rt.from === v && rt.to === u));
-      if (r) total += r.distanceKm;
+      const d = getDirectDistance(u, v, routes);
+      if (d !== null) total += d;
     }
     return Number(total.toFixed(2));
   }, [activePath, routes]);
@@ -109,7 +110,7 @@ export default function App() {
     setSelectedIds(PRESET_SELECTIONS.cycle.ids);
     setStartId('TL');
     setEndId('TL');
-    setActivePath(['TL', 'BH', 'CDX', 'HTTL', 'VMQTG', 'TL']);
+    setActivePath(['TL', 'DHBKHN', 'CVTN', 'VMQTG', 'LCT', 'HT', 'TL']);
   };
 
   const handleOpenPreset = () => {

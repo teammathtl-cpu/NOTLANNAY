@@ -11,10 +11,14 @@ export function buildAdjacencyList(routes: Route[]): Map<string, AdjacencyItem[]
 
   for (const r of routes) {
     if (!adj.has(r.from)) adj.set(r.from, []);
-    if (!adj.has(r.to)) adj.set(r.to, []);
-
     adj.get(r.from)!.push({ nodeId: r.to, weight: r.distanceKm, routeId: r.id });
-    adj.get(r.to)!.push({ nodeId: r.from, weight: r.distanceKm, routeId: r.id });
+
+    // If reverse route does NOT exist in routes, add reverse for undirected fallback:
+    const hasReverse = routes.some(other => other.from === r.to && other.to === r.from);
+    if (!hasReverse) {
+      if (!adj.has(r.to)) adj.set(r.to, []);
+      adj.get(r.to)!.push({ nodeId: r.from, weight: r.distanceKm, routeId: r.id });
+    }
   }
 
   return adj;
@@ -29,10 +33,12 @@ export function getDirectDistance(
   routes: Route[]
 ): number | null {
   if (fromId === toId) return 0;
-  const match = routes.find(
-    r => (r.from === fromId && r.to === toId) || (r.from === toId && r.to === fromId)
-  );
-  return match ? match.distanceKm : null;
+  // 1. Try exact directed match (fromId -> toId)
+  const directedMatch = routes.find(r => r.from === fromId && r.to === toId);
+  if (directedMatch) return directedMatch.distanceKm;
+  // 2. Fallback to reverse match (toId -> fromId)
+  const reverseMatch = routes.find(r => r.from === toId && r.to === fromId);
+  return reverseMatch ? reverseMatch.distanceKm : null;
 }
 
 /**
@@ -428,11 +434,6 @@ export function enumerateSortedHamiltonianCycles(
     const seenCycles = new Set<string>();
 
     for (const p of perms) {
-      // In undirected graph, cycle v0 -> p1 -> ... -> pk -> v0 has same edges as v0 -> pk -> ... -> p1 -> v0
-      // To list all distinct geometric cycles without duplicate reversed twins, canonicalize:
-      const isCanonical = p.length <= 1 || p[0].localeCompare(p[p.length - 1]) <= 0;
-      if (!isCanonical) continue;
-
       const cycle = [startId, ...p, startId];
       const cycleKey = cycle.join('-');
       if (!seenCycles.has(cycleKey)) {
