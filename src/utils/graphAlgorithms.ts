@@ -395,6 +395,179 @@ export function runDijkstraWithSteps(
 /**
  * Generate Alternative Plans for comparison
  */
+/**
+ * Enumerate all valid Hamiltonian cycles, calculate each cycle's total distance,
+ * and sort them ascending by total distance to select the shortest cycle as Rank 1.
+ */
+export function enumerateSortedHamiltonianCycles(
+  selectedNodes: string[],
+  startId: string,
+  routes: Route[]
+): AlternativePlan[] {
+  const otherNodes = selectedNodes.filter(n => n !== startId);
+  if (otherNodes.length === 0) {
+    return [{
+      id: 'optimal',
+      title: 'Chu trình #1: Khởi hành tại trường',
+      titleEn: 'Cycle #1: Start at School',
+      description: 'Hành trình xuất phát và kết thúc tại THPT Thăng Long.',
+      descriptionEn: 'Start and return to Thang Long School.',
+      path: [startId, startId],
+      totalDistanceKm: 0,
+      rank: 1,
+      diffKm: 0,
+      diffPercent: 0,
+      isOptimal: true,
+    }];
+  }
+
+  const allCycles: Array<{ path: string[]; distance: number }> = [];
+
+  if (otherNodes.length <= 6) {
+    const perms = permute(otherNodes);
+    const seenCycles = new Set<string>();
+
+    for (const p of perms) {
+      // In undirected graph, cycle v0 -> p1 -> ... -> pk -> v0 has same edges as v0 -> pk -> ... -> p1 -> v0
+      // To list all distinct geometric cycles without duplicate reversed twins, canonicalize:
+      const isCanonical = p.length <= 1 || p[0].localeCompare(p[p.length - 1]) <= 0;
+      if (!isCanonical) continue;
+
+      const cycle = [startId, ...p, startId];
+      const cycleKey = cycle.join('-');
+      if (!seenCycles.has(cycleKey)) {
+        seenCycles.add(cycleKey);
+        const dist = calculatePathDistance(cycle, routes);
+        allCycles.push({ path: cycle, distance: dist });
+      }
+    }
+  } else {
+    // When 7+ nodes (where permutations > 5000), use multi-start randomized searches
+    const baseOpt = solveHamiltonianCycle(selectedNodes, startId, routes);
+    allCycles.push({ path: baseOpt.shortestCycle, distance: baseOpt.totalDistanceKm });
+
+    const seenCycles = new Set<string>([baseOpt.shortestCycle.join('-')]);
+    for (let trial = 0; trial < 100 && allCycles.length < 30; trial++) {
+      const shuffled = [...otherNodes].sort(() => Math.random() - 0.5);
+      const cycle = [startId, ...shuffled, startId];
+      const cycleKey = cycle.join('-');
+      if (!seenCycles.has(cycleKey)) {
+        seenCycles.add(cycleKey);
+        const dist = calculatePathDistance(cycle, routes);
+        allCycles.push({ path: cycle, distance: dist });
+      }
+    }
+  }
+
+  // Sort strictly ascending by total distance (Quãng đường ngắn nhất lên đầu)
+  allCycles.sort((a, b) => a.distance - b.distance);
+
+  const minDist = allCycles[0]?.distance || 0;
+
+  return allCycles.map((c, idx) => {
+    const rank = idx + 1;
+    const isOpt = rank === 1;
+    const diff = Number((c.distance - minDist).toFixed(1));
+    const diffPct = minDist > 0 ? Math.round((diff / minDist) * 100) : 0;
+
+    return {
+      id: isOpt ? 'optimal' : `cycle-${rank}`,
+      title: isOpt 
+        ? `Chu trình #1 (Ngắn nhất - Tối ưu)` 
+        : `Chu trình #${rank} (Khả dĩ)`,
+      titleEn: isOpt 
+        ? `Cycle #1 (Shortest - Optimal)` 
+        : `Cycle #${rank} (Alternative)`,
+      description: isOpt
+        ? `Chu trình Hamilton tối ưu đạt tổng quãng đường nhỏ nhất (${c.distance} km) sau khi liệt kê và so sánh toàn bộ ${allCycles.length} chu trình hợp lệ.`
+        : `Chu trình phụ thứ ${rank} với tổng cự ly ${c.distance} km (dài hơn chu trình tối ưu ${diff} km, chênh lệch +${diffPct}%).`,
+      descriptionEn: isOpt
+        ? `Optimal Hamiltonian cycle with minimum distance (${c.distance} km) among all ${allCycles.length} valid cycles.`
+        : `Alternative cycle #${rank} with total distance of ${c.distance} km (+${diff} km longer).`,
+      path: c.path,
+      totalDistanceKm: c.distance,
+      rank,
+      diffKm: diff,
+      diffPercent: diffPct,
+      isOptimal: isOpt,
+    };
+  });
+}
+
+/**
+ * Enumerate all valid Hamiltonian paths, calculate each path's total distance,
+ * and sort them ascending by total distance to select the shortest path as Rank 1.
+ */
+export function enumerateSortedHamiltonianPaths(
+  selectedNodes: string[],
+  startId: string,
+  endId: string,
+  routes: Route[]
+): AlternativePlan[] {
+  const middleNodes = selectedNodes.filter(n => n !== startId && n !== endId);
+
+  const allPaths: Array<{ path: string[]; distance: number }> = [];
+
+  if (middleNodes.length <= 6) {
+    const perms = permute(middleNodes);
+    for (const p of perms) {
+      const path = [startId, ...p, endId];
+      const dist = calculatePathDistance(path, routes);
+      allPaths.push({ path, distance: dist });
+    }
+  } else {
+    const baseOpt = solveHamiltonianPath(selectedNodes, startId, endId, routes);
+    allPaths.push({ path: baseOpt.shortestPath, distance: baseOpt.totalDistanceKm });
+    const seen = new Set<string>([baseOpt.shortestPath.join('-')]);
+    for (let trial = 0; trial < 100 && allPaths.length < 30; trial++) {
+      const shuffled = [...middleNodes].sort(() => Math.random() - 0.5);
+      const path = [startId, ...shuffled, endId];
+      const key = path.join('-');
+      if (!seen.has(key)) {
+        seen.add(key);
+        allPaths.push({ path, distance: calculatePathDistance(path, routes) });
+      }
+    }
+  }
+
+  // Sort strictly ascending by total distance
+  allPaths.sort((a, b) => a.distance - b.distance);
+
+  const minDist = allPaths[0]?.distance || 0;
+
+  return allPaths.map((p, idx) => {
+    const rank = idx + 1;
+    const isOpt = rank === 1;
+    const diff = Number((p.distance - minDist).toFixed(1));
+    const diffPct = minDist > 0 ? Math.round((diff / minDist) * 100) : 0;
+
+    return {
+      id: isOpt ? 'optimal' : `path-${rank}`,
+      title: isOpt 
+        ? `Đường đi #1 (Ngắn nhất - Tối ưu)` 
+        : `Đường đi #${rank} (Khả dĩ)`,
+      titleEn: isOpt 
+        ? `Path #1 (Shortest - Optimal)` 
+        : `Path #${rank} (Alternative)`,
+      description: isOpt
+        ? `Đường đi Hamilton ngắn nhất từ THPT Thăng Long đến đích sau khi duyệt và so sánh toàn bộ ${allPaths.length} đường đi khả dĩ.`
+        : `Đường đi phụ thứ ${rank} với tổng cự ly ${p.distance} km (dài hơn đường đi tối ưu ${diff} km, chênh lệch +${diffPct}%).`,
+      descriptionEn: isOpt
+        ? `Shortest Hamiltonian path from school to destination among all ${allPaths.length} valid paths.`
+        : `Alternative path #${rank} with total distance of ${p.distance} km (+${diff} km longer).`,
+      path: p.path,
+      totalDistanceKm: p.distance,
+      rank,
+      diffKm: diff,
+      diffPercent: diffPct,
+      isOptimal: isOpt,
+    };
+  });
+}
+
+/**
+ * Generate Alternative Plans for comparison
+ */
 export function generateAlternativePlans(
   mode: 'cycle' | 'path' | 'subset',
   selectedNodes: string[],
@@ -402,98 +575,27 @@ export function generateAlternativePlans(
   endId: string,
   routes: Route[]
 ): AlternativePlan[] {
-  const plans: AlternativePlan[] = [];
-
   if (mode === 'cycle') {
-    // 1. In selection order
-    const selCycle = [startId, ...selectedNodes.filter(n => n !== startId), startId];
-    plans.push({
-      id: 'selection-order',
-      title: 'Theo thứ tự đang chọn',
-      titleEn: 'In selection order',
-      description: 'Dùng đúng thứ tự khi chọn điểm.',
-      descriptionEn: 'Uses the exact order you selected the stops.',
-      path: selCycle,
-      totalDistanceKm: calculatePathDistance(selCycle, routes),
-    });
-
-    // 2. Reverse order
-    const otherReversed = selectedNodes.filter(n => n !== startId).slice().reverse();
-    const revCycle = [startId, ...otherReversed, startId];
-    plans.push({
-      id: 'reverse-order',
-      title: 'Đảo chiều vòng tham quan',
-      titleEn: 'Reverse tour direction',
-      description: 'Thử đi theo chiều ngược lại để đối chiếu.',
-      descriptionEn: 'Try going in the opposite direction to compare.',
-      path: revCycle,
-      totalDistanceKm: calculatePathDistance(revCycle, routes),
-    });
-
-    // 3. Optimal Hamiltonian Cycle
-    const optRes = solveHamiltonianCycle(selectedNodes, startId, routes);
-    plans.push({
-      id: 'optimal',
-      title: 'Lời giải chu trình tối ưu (Hamilton)',
-      titleEn: 'Optimal Hamiltonian Cycle',
-      description: 'Phương án ngắn nhất duyệt qua tất cả hoán vị.',
-      descriptionEn: 'Shortest cycle exploring all permutations.',
-      path: optRes.shortestCycle,
-      totalDistanceKm: optRes.totalDistanceKm,
-    });
+    return enumerateSortedHamiltonianCycles(selectedNodes, startId, routes);
   } else if (mode === 'path') {
-    // 1. In selection order
-    const middleSel = selectedNodes.filter(n => n !== startId && n !== endId);
-    const selPath = [startId, ...middleSel, endId];
-    plans.push({
-      id: 'selection-order',
-      title: 'Theo thứ tự đang chọn',
-      titleEn: 'In selection order',
-      description: 'Đi từ điểm đầu đến điểm cuối theo thứ tự chọn.',
-      descriptionEn: 'Travels from start to end in the current node order.',
-      path: selPath,
-      totalDistanceKm: calculatePathDistance(selPath, routes),
-    });
-
-    // 2. Reverse middle
-    const revMiddle = middleSel.slice().reverse();
-    const revPath = [startId, ...revMiddle, endId];
-    plans.push({
-      id: 'reverse-order',
-      title: 'Đảo phần thân hành trình',
-      titleEn: 'Reverse middle stops',
-      description: 'Giữ nguyên 2 đầu mút, đảo thứ tự các điểm ở giữa.',
-      descriptionEn: 'Keeps both endpoints, reverses the middle stops.',
-      path: revPath,
-      totalDistanceKm: calculatePathDistance(revPath, routes),
-    });
-
-    // 3. Optimal Hamiltonian Path
-    const optPathRes = solveHamiltonianPath(selectedNodes, startId, endId, routes);
-    plans.push({
-      id: 'optimal',
-      title: 'Đường đi Hamilton tối ưu',
-      titleEn: 'Optimal Hamiltonian Path',
-      description: 'Lộ trình ngắn nhất xuất phát từ trường đến điểm cuối.',
-      descriptionEn: 'Shortest one-way path from school to destination.',
-      path: optPathRes.shortestPath,
-      totalDistanceKm: optPathRes.totalDistanceKm,
-    });
+    return enumerateSortedHamiltonianPaths(selectedNodes, startId, endId, routes);
   } else {
     // Subset mode (Dijkstra)
     const directRes = runDijkstraWithSteps(startId, endId, selectedNodes, routes, []);
-    plans.push({
-      id: 'dijkstra',
-      title: 'Đường đi ngắn nhất (Dijkstra)',
+    return [{
+      id: 'optimal',
+      title: 'Đường đi ngắn nhất Dijkstra',
       titleEn: 'Shortest Path (Dijkstra)',
-      description: 'Đường đi tối ưu chỉ xét trong tập điểm đã chọn.',
-      descriptionEn: 'Optimal path evaluated within chosen subset.',
+      description: 'Lời giải đường đi ngắn nhất giữa hai điểm trong tập con đã chọn.',
+      descriptionEn: 'Shortest path inside chosen subset.',
       path: directRes.path,
       totalDistanceKm: directRes.totalDistanceKm,
-    });
+      rank: 1,
+      diffKm: 0,
+      diffPercent: 0,
+      isOptimal: true,
+    }];
   }
-
-  return plans;
 }
 
 /**

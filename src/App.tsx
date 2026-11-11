@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MarieHeader } from './components/MarieHeader';
 import { GuideShell } from './components/GuideShell';
 import { VisualStage } from './components/VisualStage';
 import { MapView } from './components/MapView';
+import { GraphCanvas } from './components/GraphCanvas';
 import { DistanceMatrixView } from './components/DistanceMatrixView';
 import { DataManagerModal } from './components/DataManagerModal';
 import { LocationDetailModal } from './components/LocationDetailModal';
@@ -23,7 +24,18 @@ import {
   solveHamiltonianPath, 
   runDijkstraWithSteps 
 } from './utils/graphAlgorithms';
-import { MapPin, School, Sparkles, Ruler } from 'lucide-react';
+import { 
+  MapPin, 
+  School, 
+  Sparkles, 
+  Ruler, 
+  Network, 
+  Layers, 
+  Compass, 
+  ArrowRight,
+  Eye,
+  Share2
+} from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -39,7 +51,7 @@ export default function App() {
   // Selected stop IDs for the current tour mode
   const [selectedIds, setSelectedIds] = useState<string[]>(PRESET_SELECTIONS.cycle.ids);
   const [startId, setStartId] = useState<string>('TL');
-  const [endId, setEndId] = useState<string>('');
+  const [endId, setEndId] = useState<string>('TL');
 
   // Active path to highlight across Map & Graph
   const [activePath, setActivePath] = useState<string[]>([
@@ -52,6 +64,22 @@ export default function App() {
 
   // Layout mode for Guide view: 'split' (50/50) | 'wide-list' (full-width stops grid) | 'wide-map'
   const [layoutMode, setLayoutMode] = useState<'split' | 'wide-list' | 'wide-map'>('split');
+
+  // Bottom view mode: 'both' (side-by-side) | 'graph' (full graph) | 'map' (full map)
+  const [bottomViewMode, setBottomViewMode] = useState<'both' | 'graph' | 'map'>('both');
+
+  // Total distance of active route
+  const activePathDistance = useMemo(() => {
+    if (activePath.length < 2) return 0;
+    let total = 0;
+    for (let i = 0; i < activePath.length - 1; i++) {
+      const u = activePath[i];
+      const v = activePath[i + 1];
+      const r = routes.find(rt => (rt.from === u && rt.to === v) || (rt.from === v && rt.to === u));
+      if (r) total += r.distanceKm;
+    }
+    return Number(total.toFixed(2));
+  }, [activePath, routes]);
 
   const handleOpenDetailModal = (loc: TouristLocation, initialTab: 'info' | 'map' | 'distances' = 'info') => {
     setSelectedLocation(loc);
@@ -68,7 +96,7 @@ export default function App() {
     if (preset) {
       setSelectedIds(preset.ids);
       setStartId(preset.startId);
-      setEndId(preset.endId || '');
+      setEndId(mode === 'cycle' ? 'TL' : (preset.endId || ''));
     }
   };
 
@@ -80,7 +108,7 @@ export default function App() {
     setCurrentStep('select');
     setSelectedIds(PRESET_SELECTIONS.cycle.ids);
     setStartId('TL');
-    setEndId('');
+    setEndId('TL');
     setActivePath(['TL', 'BH', 'CDX', 'HTTL', 'VMQTG', 'TL']);
   };
 
@@ -258,30 +286,124 @@ export default function App() {
 
             </div>
 
-            {/* Expansive Full-Width Geographic Map Down Below */}
-            <div className="space-y-3 pt-2">
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-white/95 border border-[#d7ccbb] p-4 rounded-3xl shadow-xs">
-                <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#133654] flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-rose-600" />
-                    <span>{isVi ? 'Bản Đồ Địa Lý Toàn Cảnh Hà Nội — Kết Nối 14 Điểm Đến' : 'Full Geographic Map of Hanoi — Connecting 14 Landmarks'}</span>
-                  </h3>
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    {isVi 
-                      ? 'Hiển thị chi tiết thực địa từng điểm đến, cự ly từng chặng (km) và đường đi thực tế xuất phát từ THPT Thăng Long.' 
-                      : 'Real-world street map showing all 14 landmarks, segment distances in km, and active tour route.'}
-                  </p>
+            {/* Comprehensive Bottom Section: Graph Preview & Satellite Geographic Map */}
+            <div className="space-y-4 pt-4 border-t-2 border-[#ded5c7]">
+              {/* Header card with view mode switcher and route summary */}
+              <div className="bg-white/95 border border-[#d7ccbb] p-4 sm:p-5 rounded-3xl shadow-xs space-y-3.5">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-base sm:text-xl font-black text-[#133654] flex items-center gap-2.5">
+                      <Network className="w-5 h-5 text-indigo-600" />
+                      <span>{isVi ? 'Xem Trước Đồ Thị Mạng Lưới & Bản Đồ Vệ Tinh Cuối Trang' : 'Network Graph Preview & Satellite Map at Page Bottom'}</span>
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                      {isVi 
+                        ? 'Đối sánh trực quan mô hình lý thuyết đồ thị (đỉnh V, cạnh E có trọng số cự ly km) và thực địa vệ tinh toàn cảnh 14 điểm đến Thăng Long - Hà Nội.' 
+                        : 'Visual side-by-side comparison between the theoretical graph network (vertices V, weighted edges E) and real-world satellite map.'}
+                    </p>
+                  </div>
+
+                  {/* Mode switcher tabs */}
+                  <div className="flex items-center p-1 bg-[#f7f1e7] rounded-2xl border border-[#ded5c7] text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setBottomViewMode('both')}
+                      className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                        bottomViewMode === 'both' 
+                          ? 'bg-[#133654] text-white shadow-xs' 
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <span>⚡</span>
+                      <span>{isVi ? 'Song song cả hai' : 'Side-by-Side'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setBottomViewMode('graph')}
+                      className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                        bottomViewMode === 'graph' 
+                          ? 'bg-indigo-600 text-white shadow-xs' 
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Network className="w-3.5 h-3.5" />
+                      <span>{isVi ? 'Xem trước đồ thị' : 'Graph Preview'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setBottomViewMode('map')}
+                      className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                        bottomViewMode === 'map' 
+                          ? 'bg-rose-600 text-white shadow-xs' 
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>{isVi ? 'Bản đồ vệ tinh' : 'Satellite Map'}</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Quick focus pills */}
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
-                  <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">{isVi ? 'Xem nhanh:' : 'Focus:'}</span>
+                {/* Active Path Sequence Strip */}
+                {activePath.length > 0 && (
+                  <div className="bg-[#fcfaf7] border border-[#e6dcce] rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-full">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 whitespace-nowrap flex items-center gap-1">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        {isVi ? 'Lộ trình đang xem trước:' : 'Active Route Preview:'}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {activePath.map((id, idx) => {
+                          const loc = locations.find(l => l.id === id);
+                          const isStart = idx === 0;
+                          const isEnd = idx === activePath.length - 1;
+                          return (
+                            <React.Fragment key={`${id}-${idx}`}>
+                              <button
+                                onClick={() => loc && setSelectedLocation(loc)}
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition-all ${
+                                  id === 'TL'
+                                    ? 'bg-[#133654] text-white shadow-2xs'
+                                    : isStart || isEnd
+                                    ? 'bg-emerald-600 text-white shadow-2xs'
+                                    : 'bg-white text-slate-700 border border-[#ded5c7] hover:border-slate-400'
+                                }`}
+                              >
+                                <span>{loc ? loc.label : id}</span>
+                              </button>
+                              {idx < activePath.length - 1 && (
+                                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
+                              )}
+                            </React.Fragment>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-xl font-black">
+                        {isVi ? 'Tổng cự ly:' : 'Distance:'} {activePathDistance} km
+                      </span>
+                      <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-xl font-bold">
+                        {activePath.length} {isVi ? 'điểm dừng' : 'stops'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Quick focus landmark pills */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full pt-1 border-t border-slate-100">
+                  <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">{isVi ? 'Tiêu điểm:' : 'Focus:'}</span>
                   {locations.map(loc => (
                     <button
                       key={loc.id}
                       onClick={() => setSelectedLocation(loc)}
                       className={`px-2.5 py-1 rounded-xl text-[10px] font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                        loc.id === 'TL' 
+                        selectedLocation?.id === loc.id
+                          ? 'bg-amber-500 text-slate-900 font-black shadow-xs ring-2 ring-amber-300'
+                          : loc.id === 'TL' 
                           ? 'bg-[#133654] text-white shadow-2xs' 
                           : 'bg-[#f7f1e7] hover:bg-slate-200 text-slate-800 border border-[#d7ccbb]'
                       }`}
@@ -292,21 +414,146 @@ export default function App() {
                 </div>
               </div>
 
-              {/* High-fidelity Map container */}
-              <MapView
-                locations={locations}
-                routes={routes}
-                selectedLocationId={selectedLocation?.id || null}
-                onSelectLocation={loc => setSelectedLocation(loc)}
-                highlightedPath={activePath}
-                language={language}
-                onSetStart={id => setStartId(id)}
-                onSetEnd={id => setEndId(id)}
-                mapHeight="580px"
-                selectedIds={selectedIds}
-                onToggleItinerary={handleToggleItinerary}
-                onSelectItinerary={handleSelectItinerary}
-              />
+              {/* Main Visual Display: Side-by-Side OR Single Expanded */}
+              {bottomViewMode === 'both' && (
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                  {/* Left Column: Graph Network Preview */}
+                  <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                    <div className="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Network className="w-4 h-4 text-amber-400" />
+                        <span className="text-xs sm:text-sm font-bold text-white">
+                          {isVi ? '1. Đồ thị mạng lưới lý thuyết (Graph Preview)' : '1. Graph Network Model'}
+                        </span>
+                        <span className="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">
+                          {locations.length} {isVi ? 'đỉnh V' : 'nodes'}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-400 hidden sm:inline">
+                        {isVi ? 'Kéo thả đỉnh • Bật/tắt trọng số km' : 'Drag nodes • Toggle weights'}
+                      </span>
+                    </div>
+                    <div className="h-[600px] w-full relative">
+                      <GraphCanvas
+                        locations={locations}
+                        routes={routes}
+                        selectedLocationId={selectedLocation?.id || null}
+                        onSelectLocation={loc => setSelectedLocation(loc)}
+                        highlightedPath={activePath}
+                        language={language}
+                        onSetStart={id => setStartId(id)}
+                        onSetEnd={id => setEndId(id)}
+                        startId={startId}
+                        endId={endId}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Right Column: Geographic Satellite & Street Map */}
+                  <div className="flex flex-col bg-white border border-[#d7ccbb] rounded-3xl overflow-hidden shadow-xl">
+                    <div className="px-4 py-3 bg-[#f7f1e7] border-b border-[#d7ccbb] flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-rose-600" />
+                        <span className="text-xs sm:text-sm font-black text-[#133654]">
+                          {isVi ? '2. Bản đồ địa lý thực địa & Vệ tinh (Geographic Map)' : '2. Real-World Geographic Map'}
+                        </span>
+                        <span className="text-[10px] bg-rose-100 text-rose-700 font-semibold px-2 py-0.5 rounded-full border border-rose-200">
+                          Vệ tinh / Street
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 hidden sm:inline">
+                        {isVi ? 'Nhãn cự ly km giữa đường' : 'Road distance badges'}
+                      </span>
+                    </div>
+                    <div className="h-[600px] w-full relative">
+                      <MapView
+                        locations={locations}
+                        routes={routes}
+                        selectedLocationId={selectedLocation?.id || null}
+                        onSelectLocation={loc => setSelectedLocation(loc)}
+                        highlightedPath={activePath}
+                        language={language}
+                        onSetStart={id => setStartId(id)}
+                        onSetEnd={id => setEndId(id)}
+                        mapHeight="600px"
+                        selectedIds={selectedIds}
+                        onToggleItinerary={handleToggleItinerary}
+                        onSelectItinerary={handleSelectItinerary}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Full-Width Graph Preview Mode */}
+              {bottomViewMode === 'graph' && (
+                <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                  <div className="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Network className="w-4 h-4 text-amber-400" />
+                      <span className="text-sm sm:text-base font-bold text-white">
+                        {isVi ? 'Đồ thị mạng lưới toàn cảnh — 14 Điểm đến Thăng Long Hà Nội' : 'Full Graph Network — 14 Hanoi Landmarks'}
+                      </span>
+                      <span className="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">
+                        {locations.length} {isVi ? 'đỉnh' : 'nodes'} • {routes.length} {isVi ? 'tuyến cạnh' : 'edges'}
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-400 hidden sm:inline">
+                      {isVi ? 'Kéo thả đỉnh tự do • Cuộn chuột phóng to/thu nhỏ • Bật/tắt trọng số' : 'Interactive node dragging & zooming'}
+                    </span>
+                  </div>
+                  <div className="h-[640px] w-full relative">
+                    <GraphCanvas
+                      locations={locations}
+                      routes={routes}
+                      selectedLocationId={selectedLocation?.id || null}
+                      onSelectLocation={loc => setSelectedLocation(loc)}
+                      highlightedPath={activePath}
+                      language={language}
+                      onSetStart={id => setStartId(id)}
+                      onSetEnd={id => setEndId(id)}
+                      startId={startId}
+                      endId={endId}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Full-Width Map Mode */}
+              {bottomViewMode === 'map' && (
+                <div className="flex flex-col bg-white border border-[#d7ccbb] rounded-3xl overflow-hidden shadow-xl">
+                  <div className="px-4 py-3 bg-[#f7f1e7] border-b border-[#d7ccbb] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-rose-600" />
+                      <span className="text-sm sm:text-base font-black text-[#133654]">
+                        {isVi ? 'Bản Đồ Địa Lý Thực Địa Toàn Cảnh Hà Nội' : 'Full Geographic Street & Satellite Map'}
+                      </span>
+                      <span className="text-[10px] bg-rose-100 text-rose-700 font-semibold px-2 py-0.5 rounded-full border border-rose-200">
+                        GPS & Vệ tinh
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-500 hidden sm:inline">
+                      {isVi ? 'Hiển thị nhãn cự ly km ở giữa các cung đường' : 'Road midpoint distance labels'}
+                    </span>
+                  </div>
+                  <div className="h-[640px] w-full relative">
+                    <MapView
+                      locations={locations}
+                      routes={routes}
+                      selectedLocationId={selectedLocation?.id || null}
+                      onSelectLocation={loc => setSelectedLocation(loc)}
+                      highlightedPath={activePath}
+                      language={language}
+                      onSetStart={id => setStartId(id)}
+                      onSetEnd={id => setEndId(id)}
+                      mapHeight="640px"
+                      selectedIds={selectedIds}
+                      onToggleItinerary={handleToggleItinerary}
+                      onSelectItinerary={handleSelectItinerary}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

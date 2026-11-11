@@ -52,6 +52,7 @@ import {
 import confetti from 'canvas-confetti';
 import { MiniLocationMap } from './MiniLocationMap';
 import { SubgraphPreview } from './SubgraphPreview';
+import { SolutionDetailView } from './SolutionDetailView';
 
 interface GuideShellProps {
   locations: TouristLocation[];
@@ -127,12 +128,12 @@ export const GuideShell: React.FC<GuideShellProps> = ({
     if (currentMode === 'cycle') {
       return {
         requiredCount: 5,
-        titleVi: 'Một vòng khám phá quanh Thăng Long',
-        titleEn: 'A loop around Thang Long',
-        storyVi: 'Một đoàn khách đến thăm trường rồi muốn dạo qua các điểm tiêu biểu quanh trung tâm thủ đô trước khi quay về nơi ban đầu. Chuyến đi là một hành trình khép kín, đẹp về mặt trải nghiệm và chuẩn tắc về mặt cấu trúc đồ thị Hamilton.',
-        storyEn: 'Visitors start at Thang Long High School, explore iconic Hanoi heritage spots, and return to where the tour began. A complete closed Hamiltonian cycle.',
-        needVi: 'Nhu cầu: Tìm chu trình Hamilton ngắn nhất đi qua mỗi điểm đúng 1 lần và quay lại trường.',
-        needEn: 'Need: Find the shortest Hamiltonian cycle visiting each stop exactly once and returning to school.',
+        titleVi: 'Bài 1 — Chu Trình Hamilton Khép Kín (Xuất phát & Kết thúc tại THPT Thăng Long)',
+        titleEn: 'Lesson 1 — Closed Hamiltonian Cycle (Origin & Destination at Thang Long High School)',
+        storyVi: 'Xuất phát từ THPT Thăng Long, ghé thăm các danh lam thắng cảnh tiêu biểu quanh thủ đô Hà Nội và quay trở về trường. Điểm xuất phát và điểm kết thúc là cùng một địa điểm (THPT Thăng Long), tạo thành một chu trình Hamilton khép kín hoàn chỉnh.',
+        storyEn: 'Start at Thang Long High School, explore iconic Hanoi heritage spots, and return to the school. Origin and destination are the exact same location, forming a complete closed Hamiltonian loop.',
+        needVi: 'Yêu cầu: Điểm xuất phát và kết thúc cùng là 1 địa điểm mặc định (THPT Thăng Long). Tìm chu trình ngắn nhất đi qua mỗi điểm đúng 1 lần.',
+        needEn: 'Requirement: Start and finish at the same location (Thang Long High School). Find the shortest cycle visiting each stop exactly once.',
         bgGradient: 'from-[#102c3f] via-[#1f4f73] to-[#d7a15e]',
         btnBg: 'bg-[#133654] hover:bg-[#0f2e48]',
       };
@@ -250,7 +251,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
       setIsCustomMode(false);
       setSelectedIds(preset.ids);
       setStartId(preset.startId);
-      if (preset.endId) setEndId(preset.endId);
+      setEndId(currentMode === 'cycle' ? 'TL' : (preset.endId || ''));
       confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
     }
   };
@@ -259,7 +260,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
   const handleClearSelection = () => {
     setIsCustomMode(true);
     setSelectedIds(['TL']);
-    setEndId('');
+    setEndId(currentMode === 'cycle' ? 'TL' : '');
   };
 
   // Execute 'Chọn hành trình'
@@ -537,6 +538,30 @@ export const GuideShell: React.FC<GuideShellProps> = ({
                 <ArrowRight className="w-3.5 h-3.5 text-amber-300" />
               </button>
             </div>
+
+            {/* For Mode 1 (Cycle): Show explicit same start & end location indicator */}
+            {currentMode === 'cycle' && (
+              <div className="bg-gradient-to-r from-amber-50 to-[#fdfbf7] border border-amber-300 p-3.5 rounded-2xl shadow-2xs flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#133654] text-amber-300 flex items-center justify-center font-black text-xs shrink-0 shadow-xs border border-amber-400/50">
+                    🏛️ TL
+                  </div>
+                  <div>
+                    <div className="text-xs font-black text-[#133654] flex items-center gap-2">
+                      <span>{isVi ? 'Bài 1: Điểm xuất phát và kết thúc cùng là 1 địa điểm mặc định' : 'Lesson 1: Origin & Destination are the same location'}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-600 font-medium mt-0.5">
+                      {isVi 
+                        ? '🏛️ THPT Thăng Long (Khởi hành) ➔ Tham quan các điểm đã chọn ➔ 🏛️ THPT Thăng Long (Khép kín một vòng)'
+                        : '🏛️ Thang Long High School (Origin) ➔ Selected stops ➔ 🏛️ Thang Long High School (Finish loop)'}
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 whitespace-nowrap hidden sm:inline-block">
+                  ✓ {isVi ? 'Chu trình khép kín' : 'Closed Loop'}
+                </span>
+              </div>
+            )}
 
             {/* Target End Point Selector for Mode 2 (Path) and Mode 3 (Subset) */}
             {(currentMode === 'path' || currentMode === 'subset') && (
@@ -903,6 +928,14 @@ export const GuideShell: React.FC<GuideShellProps> = ({
             previewPath={activePlan?.path || []}
             currentMode={currentMode}
             language={language}
+            alternativePlans={alternativePlans}
+            activePlanId={activePlanId}
+            onSelectPlanId={id => {
+              setActivePlanId(id);
+              const found = alternativePlans.find(p => p.id === id);
+              if (found) onApplyPathToMap(found.path);
+            }}
+            onApplyPath={path => onApplyPathToMap(path)}
             onSelectLocation={loc => onOpenDetailModal(loc, 'info')}
             onAdvanceToResult={() => {
               setCurrentStep('result');
@@ -912,277 +945,29 @@ export const GuideShell: React.FC<GuideShellProps> = ({
           />
         )}
 
-        {/* STEP 3: KẾT QUẢ & LỜI GIẢI */}
+        {/* STEP 3: KẾT QUẢ & LỜI GIẢI CHI TIẾT */}
         {currentStep === 'result' && activePlan && (
-          <div className="space-y-4">
-            
-            {/* Top result summary card */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#d7ccbb] shadow-xs space-y-4">
-              
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e6ded1] pb-3">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {isVi ? 'Tổng chiều dài hành trình:' : 'Total Tour Distance:'}
-                  </div>
-                  <div className="text-3xl font-black text-[#133654] flex items-baseline gap-1 mt-0.5">
-                    <span>{activePlan.totalDistanceKm}</span>
-                    <span className="text-sm font-bold text-slate-500">km</span>
-                  </div>
-                </div>
-
-                {/* Travel times */}
-                {(() => {
-                  const times = calculateTravelTimes(activePlan.totalDistanceKm);
-                  return (
-                    <div className="flex items-center gap-3 text-xs text-slate-700">
-                      <div className="bg-[#fbf8f3] border border-[#d7ccbb] px-2.5 py-1 rounded-xl flex items-center gap-1.5">
-                        <Footprints className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>{times.walkMinutes} {isVi ? 'phút' : 'min'}</span>
-                      </div>
-                      <div className="bg-[#fbf8f3] border border-[#d7ccbb] px-2.5 py-1 rounded-xl flex items-center gap-1.5">
-                        <Bike className="w-3.5 h-3.5 text-sky-600" />
-                        <span>{times.bikeMinutes} {isVi ? 'phút' : 'min'}</span>
-                      </div>
-                      <div className="bg-[#fbf8f3] border border-[#d7ccbb] px-2.5 py-1 rounded-xl flex items-center gap-1.5">
-                        <Car className="w-3.5 h-3.5 text-amber-600" />
-                        <span>{times.motoMinutes} {isVi ? 'phút' : 'min'}</span>
-                      </div>
-                    </div>
-                  );
-                })()}
-              </div>
-
-              {/* Audio guide narration button */}
-              <button
-                onClick={handleToggleAudio}
-                className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
-                  isSpeaking
-                    ? 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
-                    : 'bg-[#f7f1e7] hover:bg-[#ede4d4] text-[#133654] border-[#d7ccbb]'
-                }`}
-              >
-                {isSpeaking ? <VolumeX className="w-4 h-4 text-rose-600" /> : <Volume2 className="w-4 h-4 text-[#133654]" />}
-                <span>
-                  {isSpeaking 
-                    ? (isVi ? 'Dừng phát thuyết minh' : 'Stop Narration') 
-                    : (isVi ? 'Nghe thuyết minh lộ trình này (Audio Guide)' : 'Listen to Tour Narration')}
-                </span>
-              </button>
-
-              {/* Alternative Plans comparison tabs */}
-              {alternativePlans.length > 1 && (
-                <div className="space-y-2 pt-2">
-                  <div className="text-xs font-extrabold text-slate-700">
-                    {isVi ? 'Đối chiếu các phương án hành trình:' : 'Compare Alternative Tour Options:'}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    {alternativePlans.map(plan => {
-                      const isSelectedPlan = plan.id === activePlanId;
-                      return (
-                        <div
-                          key={plan.id}
-                          onClick={() => setActivePlanId(plan.id)}
-                          className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
-                            isSelectedPlan
-                              ? 'bg-[#133654] text-white border-[#133654] shadow-xs'
-                              : 'bg-[#fbf8f3] hover:bg-white text-slate-800 border-[#d7ccbb]'
-                          }`}
-                        >
-                          <div className="text-[11px] font-bold truncate">
-                            {isVi ? plan.title : plan.titleEn}
-                          </div>
-                          <div className={`text-sm font-black mt-0.5 ${isSelectedPlan ? 'text-amber-300' : 'text-[#133654]'}`}>
-                            {plan.totalDistanceKm} km
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-            {/* DIJKSTRA PLAYER (when mode is subset) */}
-            {currentMode === 'subset' && dijkstraRunResult && dijkstraRunResult.steps.length > 0 && (
-              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-extrabold text-[10px] uppercase">
-                      Dijkstra Player
-                    </span>
-                    <span className="text-xs font-bold text-slate-800">
-                      {isVi 
-                        ? `Bước ${dijkstraCurrentStep + 1} / ${dijkstraRunResult.steps.length}` 
-                        : `Step ${dijkstraCurrentStep + 1} of ${dijkstraRunResult.steps.length}`}
-                    </span>
-                  </div>
-
-                  {/* Player controls */}
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setDijkstraCurrentStep(prev => Math.max(0, prev - 1))}
-                      disabled={dijkstraCurrentStep === 0}
-                      className="p-1 rounded-lg bg-white border border-amber-200 text-slate-700 disabled:opacity-40"
-                    >
-                      <SkipBack className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setIsPlayingDijkstra(!isPlayingDijkstra)}
-                      className="p-1 px-2 rounded-lg bg-[#82501f] text-white font-bold text-xs flex items-center gap-1"
-                    >
-                      {isPlayingDijkstra ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                    </button>
-                    <button
-                      onClick={() => setDijkstraCurrentStep(prev => Math.min(dijkstraRunResult.steps.length - 1, prev + 1))}
-                      disabled={dijkstraCurrentStep >= dijkstraRunResult.steps.length - 1}
-                      className="p-1 rounded-lg bg-white border border-amber-200 text-slate-700 disabled:opacity-40"
-                    >
-                      <SkipForward className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Step explanation */}
-                <div className="p-3 bg-white rounded-xl border border-amber-200 text-xs text-slate-800 leading-relaxed font-medium">
-                  {isVi 
-                    ? dijkstraRunResult.steps[dijkstraCurrentStep]?.explanationVi 
-                    : dijkstraRunResult.steps[dijkstraCurrentStep]?.explanationEn}
-                </div>
-
-                {/* Distance labels table at current step */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                  {Object.entries(dijkstraRunResult.steps[dijkstraCurrentStep]?.distances || {}).map(([id, d]) => {
-                    const loc = locationMap.get(id);
-                    const isVisited = dijkstraRunResult.steps[dijkstraCurrentStep]?.visitedNodes.includes(id);
-
-                    return (
-                      <div
-                        key={id}
-                        className={`p-2 rounded-xl border ${
-                          isVisited ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold' : 'bg-white border-amber-200 text-slate-700'
-                        }`}
-                      >
-                        <div className="truncate font-semibold">{loc?.label || id}</div>
-                        <div className="font-extrabold text-xs">d = {d === Infinity ? '∞' : `${d} km`}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Turn by turn stops sequence */}
-            <div className="space-y-2">
-              <div className="text-xs font-bold text-slate-800">
-                {isVi ? 'Thứ tự các điểm ghé thăm trong hành trình:' : 'Sequential Tour Stops:'}
-              </div>
-
-              <div className="space-y-2">
-                {activePlan.path.map((nodeId, idx) => {
-                  const loc = locationMap.get(nodeId);
-                  if (!loc) return null;
-                  const isSchool = nodeId === 'TL';
-                  const nextId = activePlan.path[idx + 1];
-                  const segmentKm = nextId ? getDirectDistance(nodeId, nextId, routes) : null;
-
-                  return (
-                    <div key={`${nodeId}-${idx}`} className="space-y-1">
-                      <div
-                        onClick={() => onOpenDetailModal(loc)}
-                        className="p-3 bg-white hover:bg-[#fbf8f3] border border-[#d7ccbb] rounded-2xl flex items-center justify-between cursor-pointer transition-colors shadow-2xs"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                            isSchool ? 'bg-amber-400 text-slate-900 font-black' : 'bg-[#133654] text-white'
-                          }`}>
-                            {idx + 1}
-                          </div>
-                          <div>
-                            <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                              {isVi ? loc.fullName : (loc.fullNameEn || loc.fullName)}
-                              {isSchool && <span className="text-[10px] bg-amber-100 text-amber-800 px-1 rounded font-bold">Trường</span>}
-                            </div>
-                            <div className="text-[10px] text-slate-500">
-                              📍 {loc.neighborhood}
-                            </div>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="text-[11px] font-semibold text-[#133654] hover:underline"
-                        >
-                          {isVi ? 'Xem ảnh' : 'View'}
-                        </button>
-                      </div>
-
-                      {/* Distance connector arrow between stops */}
-                      {nextId && segmentKm !== null && (
-                        <div className="pl-6 flex items-center gap-2 text-[10px] text-slate-500 font-bold">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#d7a15e]" />
-                          <span>↓ {segmentKm} km</span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Matrix table of distances between all selected stops in the tour */}
-            <div className="p-4 bg-white border border-[#d7ccbb] rounded-2xl space-y-2.5">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-800">
-                <span className="flex items-center gap-1.5">
-                  <Ruler className="w-4 h-4 text-[#133654]" />
-                  <span>{isVi ? 'Khoảng cách giữa tất cả các điểm trong hành trình này (km):' : 'Distances between all stops in this tour (km):'}</span>
-                </span>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-center text-[11px] border-collapse">
-                  <thead>
-                    <tr className="bg-[#f7f1e7] text-slate-700">
-                      <th className="p-1.5 text-left font-bold">{isVi ? 'Từ / Đến' : 'From / To'}</th>
-                      {Array.from(new Set(activePlan.path)).map(id => {
-                        const loc = locationMap.get(id);
-                        return (
-                          <th key={id} className="p-1.5 font-bold whitespace-nowrap">
-                            {loc?.label || id}
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.from(new Set(activePlan.path)).map(rowId => {
-                      const rowLoc = locationMap.get(rowId);
-                      return (
-                        <tr key={rowId} className="border-t border-[#e6ded1] hover:bg-[#fbf8f3]">
-                          <td className="p-1.5 text-left font-bold text-[#133654] whitespace-nowrap">
-                            {rowLoc?.label || rowId}
-                          </td>
-                          {Array.from(new Set(activePlan.path)).map(colId => {
-                            if (rowId === colId) {
-                              return <td key={colId} className="p-1.5 text-slate-300 font-medium">0</td>;
-                            }
-                            const d = getDirectDistance(rowId, colId, routes);
-                            return (
-                              <td key={colId} className="p-1.5 font-bold text-slate-800">
-                                <span className="inline-block px-1.5 py-0.5 rounded bg-[#f7f1e7] text-[#133654]">
-                                  {d !== null ? `${d}k` : '—'}
-                                </span>
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-          </div>
+          <SolutionDetailView
+            currentMode={currentMode}
+            activePlan={activePlan}
+            alternativePlans={alternativePlans}
+            activePlanId={activePlanId}
+            setActivePlanId={setActivePlanId}
+            selectedIds={selectedIds}
+            startId={startId}
+            endId={endId}
+            locations={locations}
+            routes={routes}
+            language={language}
+            onOpenDetailModal={onOpenDetailModal}
+            dijkstraRunResult={dijkstraRunResult}
+            dijkstraCurrentStep={dijkstraCurrentStep}
+            setDijkstraCurrentStep={setDijkstraCurrentStep}
+            isPlayingDijkstra={isPlayingDijkstra}
+            setIsPlayingDijkstra={setIsPlayingDijkstra}
+            onToggleAudio={handleToggleAudio}
+            isSpeaking={isSpeaking}
+          />
         )}
 
       </div>

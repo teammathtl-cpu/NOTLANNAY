@@ -1220,9 +1220,10 @@ export const INITIAL_GRAPH_DATA: GraphData = {
 export const PRESET_SELECTIONS: PresetSelectionMap = {
   cycle: {
     ids: ["TL", "BH", "CDX", "HTTL", "VMQTG"],
-    label: "Một vòng khám phá quanh Thăng Long",
-    desc: "THPT Thăng Long → Hồ Hoàn Kiếm → Chợ Đồng Xuân → Hoàng thành Thăng Long → Văn Miếu – Quốc Tử Giám → THPT Thăng Long",
-    startId: "TL"
+    label: "Một vòng khám phá quanh Thăng Long (Khép kín)",
+    desc: "THPT Thăng Long → Hồ Hoàn Kiếm → Chợ Đồng Xuân → Hoàng thành Thăng Long → Văn Miếu – Quốc Tử Giám → THPT Thăng Long (Xuất phát & kết thúc cùng là 1 địa điểm)",
+    startId: "TL",
+    endId: "TL"
   },
   path: {
     ids: ["TL", "VMQTG", "HTTL", "CHUAMOTCOT", "LCT"],

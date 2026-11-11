@@ -81,4 +81,8 @@ export interface AlternativePlan {
   descriptionEn: string;
   path: string[];
   totalDistanceKm: number;
+  rank?: number;
+  diffKm?: number;
+  diffPercent?: number;
+  isOptimal?: boolean;
 }
