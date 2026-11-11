@@ -440,8 +440,8 @@ export const INITIAL_LOCATIONS: TouristLocation[] = [
       "https://upload.wikimedia.org/wikipedia/commons/e/e5/Ch%C3%B9a_Tr%E1%BA%A5n_Qu%E1%BB%91c%2C_H%C3%A0_N%E1%BB%99i.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/0/09/West_Lake_Hanoi.jpg"
     ],
-    lat: 21.0557,
-    lng: 105.8188,
+    lat: 21.0479,
+    lng: 105.8368,
     displayOrder: 10
   },
   {
@@ -655,21 +655,21 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "TL__BH",
     "from": "TL",
     "to": "BH",
-    "distanceKm": 3.5,
+    "distanceKm": 3.8,
     "isArterial": true
   },
   {
     "id": "TL__CDX",
     "from": "TL",
     "to": "CDX",
-    "distanceKm": 5.2,
+    "distanceKm": 4.7,
     "isArterial": false
   },
   {
     "id": "TL__CTL",
     "from": "TL",
     "to": "CTL",
-    "distanceKm": 6,
+    "distanceKm": 7.6,
     "isArterial": true
   },
   {
@@ -683,812 +683,812 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "TL__LOTTE",
     "from": "TL",
     "to": "LOTTE",
-    "distanceKm": 6.2,
+    "distanceKm": 6.7,
     "isArterial": true
   },
   {
     "id": "TL__VMQTG",
     "from": "TL",
     "to": "VMQTG",
-    "distanceKm": 3.6,
+    "distanceKm": 4.7,
     "isArterial": true
   },
   {
     "id": "TL__HTTL",
     "from": "TL",
     "to": "HTTL",
-    "distanceKm": 4.9,
+    "distanceKm": 5.4,
     "isArterial": false
   },
   {
     "id": "TL__BTDTH",
     "from": "TL",
     "to": "BTDTH",
-    "distanceKm": 8.7,
+    "distanceKm": 9.1,
     "isArterial": false
   },
   {
     "id": "TL__PTH",
     "from": "TL",
     "to": "PTH",
-    "distanceKm": 8.7,
+    "distanceKm": 9.3,
     "isArterial": false
   },
   {
     "id": "TL__HT",
     "from": "TL",
     "to": "HT",
-    "distanceKm": 8.6,
+    "distanceKm": 6.7,
     "isArterial": false
   },
   {
     "id": "TL__CHUAMOTCOT",
     "from": "TL",
     "to": "CHUAMOTCOT",
-    "distanceKm": 5.3,
+    "distanceKm": 5.6,
     "isArterial": false
   },
   {
     "id": "TL__LANDMARK72",
     "from": "TL",
     "to": "LANDMARK72",
-    "distanceKm": 7.9,
+    "distanceKm": 9.1,
     "isArterial": true
   },
   {
     "id": "TL__LANGLUAVANPHUC",
     "from": "TL",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 8.8,
+    "distanceKm": 9.6,
     "isArterial": true
   },
   {
     "id": "BH__CDX",
     "from": "BH",
     "to": "CDX",
-    "distanceKm": 1.1,
+    "distanceKm": 1.4,
     "isArterial": true
   },
   {
     "id": "BH__CTL",
     "from": "BH",
     "to": "CTL",
-    "distanceKm": 6.3,
+    "distanceKm": 6.8,
     "isArterial": false
   },
   {
     "id": "BH__LCT",
     "from": "BH",
     "to": "LCT",
-    "distanceKm": 2.6,
+    "distanceKm": 3.4,
     "isArterial": false
   },
   {
     "id": "BH__LOTTE",
     "from": "BH",
     "to": "LOTTE",
-    "distanceKm": 5.1,
+    "distanceKm": 5.4,
     "isArterial": false
   },
   {
     "id": "BH__VMQTG",
     "from": "BH",
     "to": "VMQTG",
-    "distanceKm": 2.1,
+    "distanceKm": 3.1,
     "isArterial": true
   },
   {
     "id": "BH__HTTL",
     "from": "BH",
     "to": "HTTL",
-    "distanceKm": 2.3,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
     "id": "BH__BTDTH",
     "from": "BH",
     "to": "BTDTH",
-    "distanceKm": 7.2,
+    "distanceKm": 7.5,
     "isArterial": false
   },
   {
     "id": "BH__PTH",
     "from": "BH",
     "to": "PTH",
-    "distanceKm": 5.6,
+    "distanceKm": 6.6,
     "isArterial": false
   },
   {
     "id": "BH__HT",
     "from": "BH",
     "to": "HT",
-    "distanceKm": 3.8,
+    "distanceKm": 4.2,
     "isArterial": true
   },
   {
     "id": "BH__CHUAMOTCOT",
     "from": "BH",
     "to": "CHUAMOTCOT",
-    "distanceKm": 2.7,
+    "distanceKm": 3.6,
     "isArterial": false
   },
   {
     "id": "BH__LANDMARK72",
     "from": "BH",
     "to": "LANDMARK72",
-    "distanceKm": 9.1,
+    "distanceKm": 9.8,
     "isArterial": false
   },
   {
     "id": "BH__LANGLUAVANPHUC",
     "from": "BH",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 12.6,
+    "distanceKm": 11.8,
     "isArterial": false
   },
   {
     "id": "CDX__CTL",
     "from": "CDX",
     "to": "CTL",
-    "distanceKm": 6.1,
+    "distanceKm": 6.5,
     "isArterial": false
   },
   {
     "id": "CDX__LCT",
     "from": "CDX",
     "to": "LCT",
-    "distanceKm": 2,
+    "distanceKm": 2.9,
     "isArterial": false
   },
   {
     "id": "CDX__LOTTE",
     "from": "CDX",
     "to": "LOTTE",
-    "distanceKm": 4.9,
+    "distanceKm": 5,
     "isArterial": false
   },
   {
     "id": "CDX__VMQTG",
     "from": "CDX",
     "to": "VMQTG",
-    "distanceKm": 2.4,
+    "distanceKm": 2.7,
     "isArterial": false
   },
   {
     "id": "CDX__HTTL",
     "from": "CDX",
     "to": "HTTL",
-    "distanceKm": 1.4,
+    "distanceKm": 2,
     "isArterial": true
   },
   {
     "id": "CDX__BTDTH",
     "from": "CDX",
     "to": "BTDTH",
-    "distanceKm": 6.7,
+    "distanceKm": 6.9,
     "isArterial": false
   },
   {
     "id": "CDX__PTH",
     "from": "CDX",
     "to": "PTH",
-    "distanceKm": 4.5,
+    "distanceKm": 5,
     "isArterial": true
   },
   {
     "id": "CDX__HT",
     "from": "CDX",
     "to": "HT",
-    "distanceKm": 2.8,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
     "id": "CDX__CHUAMOTCOT",
     "from": "CDX",
     "to": "CHUAMOTCOT",
-    "distanceKm": 2.2,
+    "distanceKm": 3.2,
     "isArterial": false
   },
   {
     "id": "CDX__LANDMARK72",
     "from": "CDX",
     "to": "LANDMARK72",
-    "distanceKm": 9.2,
+    "distanceKm": 9.4,
     "isArterial": false
   },
   {
     "id": "CDX__LANGLUAVANPHUC",
     "from": "CDX",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 13.3,
+    "distanceKm": 11.7,
     "isArterial": false
   },
   {
     "id": "CTL__LCT",
     "from": "CTL",
     "to": "LCT",
-    "distanceKm": 4.1,
+    "distanceKm": 4.8,
     "isArterial": false
   },
   {
     "id": "CTL__LOTTE",
     "from": "CTL",
     "to": "LOTTE",
-    "distanceKm": 1.2,
+    "distanceKm": 1.6,
     "isArterial": false
   },
   {
     "id": "CTL__VMQTG",
     "from": "CTL",
     "to": "VMQTG",
-    "distanceKm": 4.2,
+    "distanceKm": 4.5,
     "isArterial": false
   },
   {
     "id": "CTL__HTTL",
     "from": "CTL",
     "to": "HTTL",
-    "distanceKm": 4.9,
+    "distanceKm": 5.7,
     "isArterial": false
   },
   {
     "id": "CTL__BTDTH",
     "from": "CTL",
     "to": "BTDTH",
-    "distanceKm": 1.6,
+    "distanceKm": 2.4,
     "isArterial": true
   },
   {
     "id": "CTL__PTH",
     "from": "CTL",
     "to": "PTH",
-    "distanceKm": 4.6,
+    "distanceKm": 9.4,
     "isArterial": false
   },
   {
     "id": "CTL__HT",
     "from": "CTL",
     "to": "HT",
-    "distanceKm": 4,
+    "distanceKm": 6,
     "isArterial": false
   },
   {
     "id": "CTL__CHUAMOTCOT",
     "from": "CTL",
     "to": "CHUAMOTCOT",
-    "distanceKm": 3.9,
+    "distanceKm": 4.4,
     "isArterial": false
   },
   {
     "id": "CTL__LANDMARK72",
     "from": "CTL",
     "to": "LANDMARK72",
-    "distanceKm": 3.8,
+    "distanceKm": 4.2,
     "isArterial": true
   },
   {
     "id": "CTL__LANGLUAVANPHUC",
     "from": "CTL",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 8.9,
+    "distanceKm": 10,
     "isArterial": false
   },
   {
     "id": "LCT__LOTTE",
     "from": "LCT",
     "to": "LOTTE",
-    "distanceKm": 3,
+    "distanceKm": 3.3,
     "isArterial": false
   },
   {
     "id": "LCT__VMQTG",
     "from": "LCT",
     "to": "VMQTG",
-    "distanceKm": 1.3,
+    "distanceKm": 1.5,
     "isArterial": false
   },
   {
     "id": "LCT__HTTL",
     "from": "LCT",
     "to": "HTTL",
-    "distanceKm": 0.8,
+    "distanceKm": 2,
     "isArterial": true
   },
   {
     "id": "LCT__BTDTH",
     "from": "LCT",
     "to": "BTDTH",
-    "distanceKm": 4.8,
+    "distanceKm": 5.5,
     "isArterial": false
   },
   {
     "id": "LCT__PTH",
     "from": "LCT",
     "to": "PTH",
-    "distanceKm": 3.4,
+    "distanceKm": 5.6,
     "isArterial": false
   },
   {
     "id": "LCT__HT",
     "from": "LCT",
     "to": "HT",
-    "distanceKm": 2.6,
+    "distanceKm": 2.5,
     "isArterial": true
   },
   {
     "id": "LCT__CHUAMOTCOT",
     "from": "LCT",
     "to": "CHUAMOTCOT",
-    "distanceKm": 0.3,
+    "distanceKm": 0.4,
     "isArterial": true
   },
   {
     "id": "LCT__LANDMARK72",
     "from": "LCT",
     "to": "LANDMARK72",
-    "distanceKm": 7.3,
+    "distanceKm": 7.7,
     "isArterial": false
   },
   {
     "id": "LCT__LANGLUAVANPHUC",
     "from": "LCT",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 11.8,
+    "distanceKm": 10.3,
     "isArterial": false
   },
   {
     "id": "LOTTE__VMQTG",
     "from": "LOTTE",
     "to": "VMQTG",
-    "distanceKm": 3,
+    "distanceKm": 3.1,
     "isArterial": false
   },
   {
     "id": "LOTTE__HTTL",
     "from": "LOTTE",
     "to": "HTTL",
-    "distanceKm": 3.7,
+    "distanceKm": 4.3,
     "isArterial": false
   },
   {
     "id": "LOTTE__BTDTH",
     "from": "LOTTE",
     "to": "BTDTH",
-    "distanceKm": 1.8,
+    "distanceKm": 2.3,
     "isArterial": true
   },
   {
     "id": "LOTTE__PTH",
     "from": "LOTTE",
     "to": "PTH",
-    "distanceKm": 4,
+    "distanceKm": 8,
     "isArterial": false
   },
   {
     "id": "LOTTE__HT",
     "from": "LOTTE",
     "to": "HT",
-    "distanceKm": 3.5,
+    "distanceKm": 4.7,
     "isArterial": false
   },
   {
     "id": "LOTTE__CHUAMOTCOT",
     "from": "LOTTE",
     "to": "CHUAMOTCOT",
-    "distanceKm": 2.7,
+    "distanceKm": 2.9,
     "isArterial": false
   },
   {
     "id": "LOTTE__LANDMARK72",
     "from": "LOTTE",
     "to": "LANDMARK72",
-    "distanceKm": 3.5,
+    "distanceKm": 4.6,
     "isArterial": true
   },
   {
     "id": "LOTTE__LANGLUAVANPHUC",
     "from": "LOTTE",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 9.5,
+    "distanceKm": 9.4,
     "isArterial": false
   },
   {
     "id": "VMQTG__HTTL",
     "from": "VMQTG",
     "to": "HTTL",
-    "distanceKm": 1.1,
+    "distanceKm": 2.2,
     "isArterial": true
   },
   {
     "id": "VMQTG__BTDTH",
     "from": "VMQTG",
     "to": "BTDTH",
-    "distanceKm": 5.2,
+    "distanceKm": 5.3,
     "isArterial": false
   },
   {
     "id": "VMQTG__PTH",
     "from": "VMQTG",
     "to": "PTH",
-    "distanceKm": 4.6,
+    "distanceKm": 6.1,
     "isArterial": false
   },
   {
     "id": "VMQTG__HT",
     "from": "VMQTG",
     "to": "HT",
-    "distanceKm": 4.5,
+    "distanceKm": 3,
     "isArterial": false
   },
   {
     "id": "VMQTG__CHUAMOTCOT",
     "from": "VMQTG",
     "to": "CHUAMOTCOT",
-    "distanceKm": 1.2,
+    "distanceKm": 1.6,
     "isArterial": false
   },
   {
     "id": "VMQTG__LANDMARK72",
     "from": "VMQTG",
     "to": "LANDMARK72",
-    "distanceKm": 7,
+    "distanceKm": 7.5,
     "isArterial": false
   },
   {
     "id": "VMQTG__LANGLUAVANPHUC",
     "from": "VMQTG",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 10.9,
+    "distanceKm": 9.4,
     "isArterial": false
   },
   {
     "id": "HTTL__BTDTH",
     "from": "HTTL",
     "to": "BTDTH",
-    "distanceKm": 5.6,
+    "distanceKm": 6.4,
     "isArterial": false
   },
   {
     "id": "HTTL__PTH",
     "from": "HTTL",
     "to": "PTH",
-    "distanceKm": 4,
+    "distanceKm": 4.9,
     "isArterial": false
   },
   {
     "id": "HTTL__HT",
     "from": "HTTL",
     "to": "HT",
-    "distanceKm": 2.4,
+    "distanceKm": 2.3,
     "isArterial": true
   },
   {
     "id": "HTTL__CHUAMOTCOT",
     "from": "HTTL",
     "to": "CHUAMOTCOT",
-    "distanceKm": 1.1,
+    "distanceKm": 2.2,
     "isArterial": false
   },
   {
     "id": "HTTL__LANDMARK72",
     "from": "HTTL",
     "to": "LANDMARK72",
-    "distanceKm": 8,
+    "distanceKm": 8.7,
     "isArterial": false
   },
   {
     "id": "HTTL__LANGLUAVANPHUC",
     "from": "HTTL",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 12.2,
+    "distanceKm": 11,
     "isArterial": false
   },
   {
     "id": "BTDTH__PTH",
     "from": "BTDTH",
     "to": "PTH",
-    "distanceKm": 4.1,
+    "distanceKm": 9.2,
     "isArterial": false
   },
   {
     "id": "BTDTH__HT",
     "from": "BTDTH",
     "to": "HT",
-    "distanceKm": 3.4,
+    "distanceKm": 6.4,
     "isArterial": false
   },
   {
     "id": "BTDTH__CHUAMOTCOT",
     "from": "BTDTH",
     "to": "CHUAMOTCOT",
-    "distanceKm": 4.6,
+    "distanceKm": 4.8,
     "isArterial": false
   },
   {
     "id": "BTDTH__LANDMARK72",
     "from": "BTDTH",
     "to": "LANDMARK72",
-    "distanceKm": 3.2,
+    "distanceKm": 4,
     "isArterial": true
   },
   {
     "id": "BTDTH__LANGLUAVANPHUC",
     "from": "BTDTH",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 10,
+    "distanceKm": 10.8,
     "isArterial": false
   },
   {
     "id": "PTH__HT",
     "from": "PTH",
     "to": "HT",
-    "distanceKm": 0.7,
+    "distanceKm": 4.4,
     "isArterial": false
   },
   {
     "id": "PTH__CHUAMOTCOT",
     "from": "PTH",
     "to": "CHUAMOTCOT",
-    "distanceKm": 3.4,
+    "distanceKm": 5.9,
     "isArterial": false
   },
   {
     "id": "PTH__LANDMARK72",
     "from": "PTH",
     "to": "LANDMARK72",
-    "distanceKm": 7.8,
+    "distanceKm": 12.9,
     "isArterial": false
   },
   {
     "id": "PTH__LANGLUAVANPHUC",
     "from": "PTH",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 13.5,
+    "distanceKm": 14.9,
     "isArterial": false
   },
   {
     "id": "HT__CHUAMOTCOT",
     "from": "HT",
     "to": "CHUAMOTCOT",
-    "distanceKm": 3.3,
+    "distanceKm": 2.7,
     "isArterial": false
   },
   {
     "id": "HT__LANDMARK72",
     "from": "HT",
     "to": "LANDMARK72",
-    "distanceKm": 7.1,
+    "distanceKm": 9,
     "isArterial": false
   },
   {
     "id": "HT__LANGLUAVANPHUC",
     "from": "HT",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 12.9,
+    "distanceKm": 11.8,
     "isArterial": false
   },
   {
     "id": "CHUAMOTCOT__LANDMARK72",
     "from": "CHUAMOTCOT",
     "to": "LANDMARK72",
-    "distanceKm": 7,
+    "distanceKm": 7.4,
     "isArterial": false
   },
   {
     "id": "CHUAMOTCOT__LANGLUAVANPHUC",
     "from": "CHUAMOTCOT",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 11.5,
+    "distanceKm": 10.2,
     "isArterial": false
   },
   {
     "id": "LANDMARK72__LANGLUAVANPHUC",
     "from": "LANDMARK72",
     "to": "LANGLUAVANPHUC",
-    "distanceKm": 5.1,
+    "distanceKm": 7.1,
     "isArterial": true
   },
   {
     "id": "TL__CVTN",
     "from": "TL",
     "to": "CVTN",
-    "distanceKm": 1.5,
+    "distanceKm": 2.2,
     "isArterial": true
   },
   {
     "id": "BH__CVTN",
     "from": "BH",
     "to": "CVTN",
-    "distanceKm": 2.3,
+    "distanceKm": 2.7,
     "isArterial": true
   },
   {
     "id": "CDX__CVTN",
     "from": "CDX",
     "to": "CVTN",
-    "distanceKm": 3.4,
+    "distanceKm": 3.1,
     "isArterial": false
   },
   {
     "id": "CTL__CVTN",
     "from": "CTL",
     "to": "CVTN",
-    "distanceKm": 4.5,
+    "distanceKm": 6,
     "isArterial": false
   },
   {
     "id": "LCT__CVTN",
     "from": "LCT",
     "to": "CVTN",
-    "distanceKm": 3.0,
+    "distanceKm": 3,
     "isArterial": true
   },
   {
     "id": "LOTTE__CVTN",
     "from": "LOTTE",
     "to": "CVTN",
-    "distanceKm": 4.8,
+    "distanceKm": 4.9,
     "isArterial": false
   },
   {
     "id": "VMQTG__CVTN",
     "from": "VMQTG",
     "to": "CVTN",
-    "distanceKm": 1.8,
+    "distanceKm": 2.5,
     "isArterial": true
   },
   {
     "id": "HTTL__CVTN",
     "from": "HTTL",
     "to": "CVTN",
-    "distanceKm": 2.8,
+    "distanceKm": 3.1,
     "isArterial": false
   },
   {
     "id": "BTDTH__CVTN",
     "from": "BTDTH",
     "to": "CVTN",
-    "distanceKm": 7.0,
+    "distanceKm": 7.1,
     "isArterial": false
   },
   {
     "id": "PTH__CVTN",
     "from": "PTH",
     "to": "CVTN",
-    "distanceKm": 6.5,
+    "distanceKm": 7.3,
     "isArterial": false
   },
   {
     "id": "HT__CVTN",
     "from": "HT",
     "to": "CVTN",
-    "distanceKm": 4.6,
+    "distanceKm": 4.4,
     "isArterial": false
   },
   {
     "id": "CHUAMOTCOT__CVTN",
     "from": "CHUAMOTCOT",
     "to": "CVTN",
-    "distanceKm": 2.9,
+    "distanceKm": 3.2,
     "isArterial": false
   },
   {
     "id": "LANDMARK72__CVTN",
     "from": "LANDMARK72",
     "to": "CVTN",
-    "distanceKm": 7.2,
+    "distanceKm": 8.8,
     "isArterial": true
   },
   {
     "id": "LANGLUAVANPHUC__CVTN",
     "from": "LANGLUAVANPHUC",
     "to": "CVTN",
-    "distanceKm": 9.2,
+    "distanceKm": 9.6,
     "isArterial": false
   },
   {
     "id": "TL__DHBKHN",
     "from": "TL",
     "to": "DHBKHN",
-    "distanceKm": 0.6,
+    "distanceKm": 0.8,
     "isArterial": true
   },
   {
     "id": "CVTN__DHBKHN",
     "from": "CVTN",
     "to": "DHBKHN",
-    "distanceKm": 1.0,
+    "distanceKm": 2.4,
     "isArterial": true
   },
   {
     "id": "BH__DHBKHN",
     "from": "BH",
     "to": "DHBKHN",
-    "distanceKm": 3.2,
+    "distanceKm": 3.9,
     "isArterial": true
   },
   {
     "id": "CDX__DHBKHN",
     "from": "CDX",
     "to": "DHBKHN",
-    "distanceKm": 4.6,
+    "distanceKm": 4.8,
     "isArterial": false
   },
   {
     "id": "CTL__DHBKHN",
     "from": "CTL",
     "to": "DHBKHN",
-    "distanceKm": 5.5,
+    "distanceKm": 7,
     "isArterial": false
   },
   {
     "id": "LCT__DHBKHN",
     "from": "LCT",
     "to": "DHBKHN",
-    "distanceKm": 4.1,
+    "distanceKm": 5,
     "isArterial": true
   },
   {
     "id": "LOTTE__DHBKHN",
     "from": "LOTTE",
     "to": "DHBKHN",
-    "distanceKm": 5.8,
+    "distanceKm": 6.1,
     "isArterial": false
   },
   {
     "id": "VMQTG__DHBKHN",
     "from": "VMQTG",
     "to": "DHBKHN",
-    "distanceKm": 3.0,
+    "distanceKm": 4.3,
     "isArterial": true
   },
   {
     "id": "HTTL__DHBKHN",
     "from": "HTTL",
     "to": "DHBKHN",
-    "distanceKm": 4.2,
+    "distanceKm": 5.1,
     "isArterial": false
   },
   {
     "id": "BTDTH__DHBKHN",
     "from": "BTDTH",
     "to": "DHBKHN",
-    "distanceKm": 8.0,
+    "distanceKm": 8.2,
     "isArterial": false
   },
   {
     "id": "PTH__DHBKHN",
     "from": "PTH",
     "to": "DHBKHN",
-    "distanceKm": 7.8,
+    "distanceKm": 9.2,
     "isArterial": false
   },
   {
     "id": "HT__DHBKHN",
     "from": "HT",
     "to": "DHBKHN",
-    "distanceKm": 5.6,
+    "distanceKm": 6.5,
     "isArterial": false
   },
   {
     "id": "CHUAMOTCOT__DHBKHN",
     "from": "CHUAMOTCOT",
     "to": "DHBKHN",
-    "distanceKm": 4.0,
+    "distanceKm": 5.1,
     "isArterial": false
   },
   {
     "id": "LANDMARK72__DHBKHN",
     "from": "LANDMARK72",
     "to": "DHBKHN",
-    "distanceKm": 7.5,
+    "distanceKm": 8.8,
     "isArterial": true
   },
   {
     "id": "LANGLUAVANPHUC__DHBKHN",
     "from": "LANGLUAVANPHUC",
     "to": "DHBKHN",
-    "distanceKm": 9.0,
+    "distanceKm": 9.3,
     "isArterial": false
   }
 ];
