@@ -569,6 +569,84 @@ export const INITIAL_LOCATIONS: TouristLocation[] = [
     lat: 20.9718,
     lng: 105.7765,
     displayOrder: 14
+  },
+  {
+    id: "CVTN",
+    label: "CV Thống Nhất",
+    fullName: "Công viên Thống Nhất",
+    category: "Công viên",
+    description: "Được khởi công xây dựng từ năm 1958 bởi sự góp sức của đông đảo nhân dân và thanh niên Thủ đô, Công viên Thống Nhất là một trong những công viên lớn và lâu đời nhất tại Hà Nội. Với diện tích hơn 50 hecta, trung tâm là hồ Bảy Mẫu trong xanh cùng các đảo xanh mát (đảo Hòa Bình, đảo Thống Nhất), công viên được mệnh danh là 'lá phổi xanh' của Thủ đô. Nơi đây sở hữu cổng vòm hoa vàng cổ kính đặc trưng, những rặng cây rợp bóng mát, vườn hoa muôn sắc và không gian thoáng đãng lý tưởng cho người dân dạo bộ, tập thể dục, ngắm cảnh và tổ chức các hoạt động văn hóa, dã ngoại giữa lòng đô thị.",
+    shortIntro: "Lá phổi xanh lịch sử lớn bậc nhất Thủ đô với hồ Bảy Mẫu thoáng mát, cổng chào hoa vàng đặc trưng và không gian dạo bộ thư thái.",
+    imageUrl: "/assets/aistudio/image_c52147f0.png",
+    neighborhood: "354A Đường Lê Duẩn, Phường Phương Liên, Quận Đống Đa & Hai Bà Trưng, Hà Nội",
+    bestFor: "Dạo bộ, Chụp ảnh, Thể thao ngoài trời, Dã ngoại, Du lịch sinh thái đô thị",
+    highlights: [
+      "Hồ Bảy Mẫu rộng lớn và đảo Hòa Bình rợp bóng cây",
+      "Cổng chào kiến trúc vòm hoa vàng đặc trưng từ năm 1958",
+      "Lá phổi xanh lịch sử lâu đời gắn liền với khát vọng thống nhất non sông",
+      "Vị trí đắc địa gần THPT Thăng Long và các trường đại học khu Bách Khoa"
+    ],
+    x: 470,
+    y: 480,
+    fullNameEn: "Thong Nhat Park",
+    descriptionEn: "Constructed in 1958 through the volunteer labor of Hanoi's citizens and youth, Thong Nhat Park is one of the largest and oldest public parks in Hanoi. Spanning over 50 hectares with the picturesque Bay Mau Lake at its center alongside lush green islets (Peace Islet), the park is widely known as the 'green lung' of the capital. Featuring iconic yellow floral entrance arches, tree-lined promenades, colorful flower gardens, and open waterfront breezes, it is a beloved haven for jogging, outdoor photography, cultural festivals, and peaceful relaxation.",
+    shortIntroEn: "One of Hanoi's largest and most historic urban green lungs, featuring Bay Mau Lake, iconic yellow entrance gates, and relaxing tree-lined walks.",
+    neighborhoodEn: "354A Le Duan Street, Phuong Lien Ward, Dong Da & Hai Ba Trung Districts, Hanoi, Vietnam",
+    bestForEn: "Walking, Photography, Outdoor sports, Picnics, Urban nature relaxation",
+    highlightsEn: [
+      "Vast Bay Mau Lake and tranquil green islets",
+      "Iconic historic yellow archway entrance built in 1958",
+      "Historic green lung symbolizing Vietnam's aspiration for national reunification",
+      "Prime location just minutes away from Thang Long High School"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Cong+Vien+Thong+Nhat+Hanoi+Vietnam",
+    images: [
+      "/assets/aistudio/image_c52147f0.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Cong_vien_Thong_Nhat_Hanoi.jpg/1280px-Cong_vien_Thong_Nhat_Hanoi.jpg",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+    ],
+    lat: 21.0167,
+    lng: 105.8435,
+    displayOrder: 15
+  },
+  {
+    id: "DHBKHN",
+    label: "ĐH Bách Khoa",
+    fullName: "Đại học Bách khoa Hà Nội",
+    category: "Di sản học đường",
+    description: "Thành lập năm 1956, Đại học Bách khoa Hà Nội là trường đại học kỹ thuật đầu tiên và hàng đầu của Việt Nam, cái nôi đào tạo nhiều thế hệ kỹ sư, nhà khoa học và lãnh đạo ưu tú của đất nước. Tọa lạc trên khuôn viên rộng hơn 26 hecta rợp bóng cây cổ thụ giữa trung tâm quận Hai Bà Trưng, trường nổi tiếng với cổng Parabol huyền thoại, thư viện Tạ Quang Bửu hiện đại bậc nhất, quảng trường C1 cổ kính và bức biển đá hoa cương đặc trưng. Nằm tiếp giáp ngay cạnh THPT Thăng Long trên phố Tạ Quang Bửu, Bách Khoa là biểu tượng của tinh thần học thuật xuất sắc, sáng tạo công nghệ và niềm tự hào tri thức Thủ đô.",
+    shortIntro: "Trường đại học kỹ thuật trọng điểm hàng đầu Việt Nam thành lập năm 1956, cái nôi khoa học công nghệ với khuôn viên xanh mát nằm sát cạnh THPT Thăng Long.",
+    imageUrl: "/assets/aistudio/image_2c77b42f.png",
+    neighborhood: "Số 1 Đại Cồ Việt & Phố Tạ Quang Bửu, Phường Bách Khoa, Quận Hai Bà Trưng, Hà Nội",
+    bestFor: "Tham quan học đường, Chụp ảnh, Giao lưu học thuật, Khám phá công nghệ, Dạo bộ",
+    highlights: [
+      "Trường đại học kỹ thuật hàng đầu và lâu đời nhất Việt Nam (thành lập 1956)",
+      "Thư viện Tạ Quang Bửu đồ sộ và Quảng trường C1 lịch sử",
+      "Cổng Parabol nổi tiếng cùng tấm biển đá hoa cương đặc trưng",
+      "Nằm tiếp giáp ngay cạnh trường THPT Thăng Long trong cùng quần thể Bách Khoa"
+    ],
+    x: 440,
+    y: 530,
+    fullNameEn: "Hanoi University of Science and Technology",
+    descriptionEn: "Established in 1956, Hanoi University of Science and Technology (HUST) is Vietnam's first and most prestigious multidisciplinary technical university, having educated generations of leading engineers, scientists, and national leaders. Spanning over 26 hectares filled with lush greenery and shaded avenues in Hai Ba Trung District, HUST is renowned for its iconic Parabolic Gate, state-of-the-art Ta Quang Buu Library, and historic C1 Building square. Situated directly adjacent to Thang Long High School along Ta Quang Buu Street, HUST represents the pinnacle of Vietnamese technological innovation and academic excellence.",
+    shortIntroEn: "Vietnam's premier technical and research university founded in 1956, renowned for its green campus, iconic Parabolic Gate, and neighboring Thang Long High School.",
+    neighborhoodEn: "1 Dai Co Viet & Ta Quang Buu St, Bach Khoa Ward, Hai Ba Trung District, Hanoi, Vietnam",
+    bestForEn: "Campus tour, Photography, Academic exchange, Technology exploration, Walking",
+    highlightsEn: [
+      "Vietnam's first and leading technical university founded in 1956",
+      "Landmark Ta Quang Buu Library and historic C1 Square",
+      "Iconic Parabolic Gate and signature engraved granite entrance monument",
+      "Directly neighboring Thang Long High School along Ta Quang Buu Street"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Hanoi+University+of+Science+and+Technology",
+    images: [
+      "/assets/aistudio/image_2c77b42f.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/HUST_Library.jpg/1280px-HUST_Library.jpg",
+      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80"
+    ],
+    lat: 21.0055,
+    lng: 105.8433,
+    displayOrder: 16
   }
 ];
 
@@ -1209,6 +1287,209 @@ export const INITIAL_ROUTES: Route[] = [
     "to": "LANGLUAVANPHUC",
     "distanceKm": 5.1,
     "isArterial": true
+  },
+  {
+    "id": "TL__CVTN",
+    "from": "TL",
+    "to": "CVTN",
+    "distanceKm": 1.5,
+    "isArterial": true
+  },
+  {
+    "id": "BH__CVTN",
+    "from": "BH",
+    "to": "CVTN",
+    "distanceKm": 2.3,
+    "isArterial": true
+  },
+  {
+    "id": "CDX__CVTN",
+    "from": "CDX",
+    "to": "CVTN",
+    "distanceKm": 3.4,
+    "isArterial": false
+  },
+  {
+    "id": "CTL__CVTN",
+    "from": "CTL",
+    "to": "CVTN",
+    "distanceKm": 4.5,
+    "isArterial": false
+  },
+  {
+    "id": "LCT__CVTN",
+    "from": "LCT",
+    "to": "CVTN",
+    "distanceKm": 3.0,
+    "isArterial": true
+  },
+  {
+    "id": "LOTTE__CVTN",
+    "from": "LOTTE",
+    "to": "CVTN",
+    "distanceKm": 4.8,
+    "isArterial": false
+  },
+  {
+    "id": "VMQTG__CVTN",
+    "from": "VMQTG",
+    "to": "CVTN",
+    "distanceKm": 1.8,
+    "isArterial": true
+  },
+  {
+    "id": "HTTL__CVTN",
+    "from": "HTTL",
+    "to": "CVTN",
+    "distanceKm": 2.8,
+    "isArterial": false
+  },
+  {
+    "id": "BTDTH__CVTN",
+    "from": "BTDTH",
+    "to": "CVTN",
+    "distanceKm": 7.0,
+    "isArterial": false
+  },
+  {
+    "id": "PTH__CVTN",
+    "from": "PTH",
+    "to": "CVTN",
+    "distanceKm": 6.5,
+    "isArterial": false
+  },
+  {
+    "id": "HT__CVTN",
+    "from": "HT",
+    "to": "CVTN",
+    "distanceKm": 4.6,
+    "isArterial": false
+  },
+  {
+    "id": "CHUAMOTCOT__CVTN",
+    "from": "CHUAMOTCOT",
+    "to": "CVTN",
+    "distanceKm": 2.9,
+    "isArterial": false
+  },
+  {
+    "id": "LANDMARK72__CVTN",
+    "from": "LANDMARK72",
+    "to": "CVTN",
+    "distanceKm": 7.2,
+    "isArterial": true
+  },
+  {
+    "id": "LANGLUAVANPHUC__CVTN",
+    "from": "LANGLUAVANPHUC",
+    "to": "CVTN",
+    "distanceKm": 9.2,
+    "isArterial": false
+  },
+  {
+    "id": "TL__DHBKHN",
+    "from": "TL",
+    "to": "DHBKHN",
+    "distanceKm": 0.6,
+    "isArterial": true
+  },
+  {
+    "id": "CVTN__DHBKHN",
+    "from": "CVTN",
+    "to": "DHBKHN",
+    "distanceKm": 1.0,
+    "isArterial": true
+  },
+  {
+    "id": "BH__DHBKHN",
+    "from": "BH",
+    "to": "DHBKHN",
+    "distanceKm": 3.2,
+    "isArterial": true
+  },
+  {
+    "id": "CDX__DHBKHN",
+    "from": "CDX",
+    "to": "DHBKHN",
+    "distanceKm": 4.6,
+    "isArterial": false
+  },
+  {
+    "id": "CTL__DHBKHN",
+    "from": "CTL",
+    "to": "DHBKHN",
+    "distanceKm": 5.5,
+    "isArterial": false
+  },
+  {
+    "id": "LCT__DHBKHN",
+    "from": "LCT",
+    "to": "DHBKHN",
+    "distanceKm": 4.1,
+    "isArterial": true
+  },
+  {
+    "id": "LOTTE__DHBKHN",
+    "from": "LOTTE",
+    "to": "DHBKHN",
+    "distanceKm": 5.8,
+    "isArterial": false
+  },
+  {
+    "id": "VMQTG__DHBKHN",
+    "from": "VMQTG",
+    "to": "DHBKHN",
+    "distanceKm": 3.0,
+    "isArterial": true
+  },
+  {
+    "id": "HTTL__DHBKHN",
+    "from": "HTTL",
+    "to": "DHBKHN",
+    "distanceKm": 4.2,
+    "isArterial": false
+  },
+  {
+    "id": "BTDTH__DHBKHN",
+    "from": "BTDTH",
+    "to": "DHBKHN",
+    "distanceKm": 8.0,
+    "isArterial": false
+  },
+  {
+    "id": "PTH__DHBKHN",
+    "from": "PTH",
+    "to": "DHBKHN",
+    "distanceKm": 7.8,
+    "isArterial": false
+  },
+  {
+    "id": "HT__DHBKHN",
+    "from": "HT",
+    "to": "DHBKHN",
+    "distanceKm": 5.6,
+    "isArterial": false
+  },
+  {
+    "id": "CHUAMOTCOT__DHBKHN",
+    "from": "CHUAMOTCOT",
+    "to": "DHBKHN",
+    "distanceKm": 4.0,
+    "isArterial": false
+  },
+  {
+    "id": "LANDMARK72__DHBKHN",
+    "from": "LANDMARK72",
+    "to": "DHBKHN",
+    "distanceKm": 7.5,
+    "isArterial": true
+  },
+  {
+    "id": "LANGLUAVANPHUC__DHBKHN",
+    "from": "LANGLUAVANPHUC",
+    "to": "DHBKHN",
+    "distanceKm": 9.0,
+    "isArterial": false
   }
 ];
 
