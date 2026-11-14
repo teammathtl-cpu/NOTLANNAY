@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MarieHeader } from './components/MarieHeader';
 import { GuideShell } from './components/GuideShell';
 import { VisualStage } from './components/VisualStage';
@@ -22,7 +22,7 @@ import {
 import { 
   solveHamiltonianCycle, 
   solveHamiltonianPath, 
-  runDijkstraWithSteps,
+  runDijkstraWithSteps, 
   getDirectDistance 
 } from './utils/graphAlgorithms';
 import { 
@@ -42,6 +42,10 @@ import confetti from 'canvas-confetti';
 export default function App() {
   const [locations, setLocations] = useState<TouristLocation[]>(INITIAL_LOCATIONS);
   const [routes, setRoutes] = useState<Route[]>(INITIAL_ROUTES);
+
+  useEffect(() => {
+    setRoutes(INITIAL_ROUTES);
+  }, []);
   const [language, setLanguage] = useState<Language>('vi');
 
   // Core Marie Curie style states
@@ -56,7 +60,7 @@ export default function App() {
 
   // Active path to highlight across Map & Graph
   const [activePath, setActivePath] = useState<string[]>([
-    'TL', 'DHBKHN', 'CVTN', 'VMQTG', 'LCT', 'HT', 'TL'
+    'TL', 'BH', 'LCT', 'BTDTH', 'VMQTG', 'TL'
   ]);
 
   // Selected location for detail modal and initial active tab ('info' | 'map' | 'distances')
@@ -95,9 +99,17 @@ export default function App() {
     setCurrentStep('select');
     const preset = PRESET_SELECTIONS[mode];
     if (preset) {
+      const targetEnd = mode === 'cycle' ? 'TL' : (preset.endId || '');
       setSelectedIds(preset.ids);
       setStartId(preset.startId);
-      setEndId(mode === 'cycle' ? 'TL' : (preset.endId || ''));
+      setEndId(targetEnd);
+      if (mode === 'cycle') {
+        setActivePath(solveHamiltonianCycle(preset.ids, preset.startId, routes).shortestCycle);
+      } else if (mode === 'path' && targetEnd) {
+        setActivePath(solveHamiltonianPath(preset.ids, preset.startId, targetEnd, routes).shortestPath);
+      } else if (mode === 'subset' && targetEnd) {
+        setActivePath(runDijkstraWithSteps(preset.startId, targetEnd, preset.ids, routes, locations).path);
+      }
     }
   };
 
@@ -110,15 +122,26 @@ export default function App() {
     setSelectedIds(PRESET_SELECTIONS.cycle.ids);
     setStartId('TL');
     setEndId('TL');
-    setActivePath(['TL', 'DHBKHN', 'CVTN', 'VMQTG', 'LCT', 'HT', 'TL']);
+    setActivePath(['TL', 'BH', 'LCT', 'BTDTH', 'VMQTG', 'TL']);
   };
 
   const handleOpenPreset = () => {
     const preset = PRESET_SELECTIONS[currentMode];
     if (preset) {
+      const targetEnd = currentMode === 'cycle' ? 'TL' : (preset.endId || '');
       setSelectedIds(preset.ids);
       setStartId(preset.startId);
       if (preset.endId) setEndId(preset.endId);
+      if (currentMode === 'cycle') {
+        const res = solveHamiltonianCycle(preset.ids, preset.startId, routes);
+        setActivePath(res.shortestCycle);
+      } else if (currentMode === 'path' && targetEnd) {
+        const res = solveHamiltonianPath(preset.ids, preset.startId, targetEnd, routes);
+        setActivePath(res.shortestPath);
+      } else if (currentMode === 'subset' && targetEnd) {
+        const res = runDijkstraWithSteps(preset.startId, targetEnd, preset.ids, routes, locations);
+        setActivePath(res.path);
+      }
       confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
     }
   };
@@ -239,7 +262,7 @@ export default function App() {
               
               {/* Left Column: Interactive Guide Shell */}
               {(layoutMode === 'split' || layoutMode === 'wide-list') && (
-                <div className={`${layoutMode === 'wide-list' ? 'lg:col-span-12' : 'lg:col-span-6 xl:col-span-6'} flex flex-col h-full transition-all duration-300`}>
+                <div className={`${layoutMode === 'wide-list' ? 'lg:col-span-12' : 'lg:col-span-5 xl:col-span-5'} flex flex-col h-full transition-all duration-300`}>
                   <GuideShell
                     locations={locations}
                     routes={routes}
@@ -266,7 +289,7 @@ export default function App() {
 
               {/* Right Column: Visual Stage (Map & Graph Canvas) */}
               {(layoutMode === 'split' || layoutMode === 'wide-map') && (
-                <div className={`${layoutMode === 'wide-map' ? 'lg:col-span-12' : 'lg:col-span-6 xl:col-span-6'} flex flex-col h-full transition-all duration-300`}>
+                <div className={`${layoutMode === 'wide-map' ? 'lg:col-span-12' : 'lg:col-span-7 xl:col-span-7'} flex flex-col h-full transition-all duration-300`}>
                   <VisualStage
                     locations={locations}
                     routes={routes}
@@ -299,7 +322,7 @@ export default function App() {
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 mt-1">
                       {isVi 
-                        ? 'Đối sánh trực quan mô hình lý thuyết đồ thị (đỉnh V, cạnh E có trọng số cự ly km) và thực địa vệ tinh toàn cảnh 14 điểm đến Thăng Long - Hà Nội.' 
+                        ? `Đối sánh trực quan mô hình lý thuyết đồ thị (đỉnh V, cạnh E có trọng số cự ly km) và thực địa vệ tinh toàn cảnh ${locations.length} điểm đến Thăng Long - Hà Nội.` 
                         : 'Visual side-by-side comparison between the theoretical graph network (vertices V, weighted edges E) and real-world satellite map.'}
                     </p>
                   </div>
@@ -417,7 +440,7 @@ export default function App() {
 
               {/* Main Visual Display: Side-by-Side OR Single Expanded */}
               {bottomViewMode === 'both' && (
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 xl:grid-cols-[0.85fr_1.15fr] gap-4">
                   {/* Left Column: Graph Network Preview */}
                   <div className="flex flex-col bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
                     <div className="px-4 py-3 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
@@ -434,7 +457,7 @@ export default function App() {
                         {isVi ? 'Kéo thả đỉnh • Bật/tắt trọng số km' : 'Drag nodes • Toggle weights'}
                       </span>
                     </div>
-                    <div className="h-[600px] w-full relative">
+                    <div className="h-[700px] w-full relative">
                       <GraphCanvas
                         locations={locations}
                         routes={routes}
@@ -466,7 +489,7 @@ export default function App() {
                         {isVi ? 'Nhãn cự ly km giữa đường' : 'Road distance badges'}
                       </span>
                     </div>
-                    <div className="h-[600px] w-full relative">
+                    <div className="h-[700px] w-full relative">
                       <MapView
                         locations={locations}
                         routes={routes}
@@ -476,7 +499,7 @@ export default function App() {
                         language={language}
                         onSetStart={id => setStartId(id)}
                         onSetEnd={id => setEndId(id)}
-                        mapHeight="600px"
+                        mapHeight="700px"
                         selectedIds={selectedIds}
                         onToggleItinerary={handleToggleItinerary}
                         onSelectItinerary={handleSelectItinerary}
@@ -493,7 +516,7 @@ export default function App() {
                     <div className="flex items-center gap-2">
                       <Network className="w-4 h-4 text-amber-400" />
                       <span className="text-sm sm:text-base font-bold text-white">
-                        {isVi ? 'Đồ thị mạng lưới toàn cảnh — 14 Điểm đến Thăng Long Hà Nội' : 'Full Graph Network — 14 Hanoi Landmarks'}
+                        {isVi ? `Đồ thị mạng lưới toàn cảnh — ${locations.length} Điểm đến Thăng Long Hà Nội` : `Full Graph Network — ${locations.length} Hanoi Landmarks`}
                       </span>
                       <span className="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">
                         {locations.length} {isVi ? 'đỉnh' : 'nodes'} • {routes.length} {isVi ? 'tuyến cạnh' : 'edges'}
@@ -503,7 +526,7 @@ export default function App() {
                       {isVi ? 'Kéo thả đỉnh tự do • Cuộn chuột phóng to/thu nhỏ • Bật/tắt trọng số' : 'Interactive node dragging & zooming'}
                     </span>
                   </div>
-                  <div className="h-[640px] w-full relative">
+                  <div className="h-[680px] w-full relative">
                     <GraphCanvas
                       locations={locations}
                       routes={routes}
@@ -537,7 +560,7 @@ export default function App() {
                       {isVi ? 'Hiển thị nhãn cự ly km ở giữa các cung đường' : 'Road midpoint distance labels'}
                     </span>
                   </div>
-                  <div className="h-[640px] w-full relative">
+                  <div className="h-[780px] w-full relative">
                     <MapView
                       locations={locations}
                       routes={routes}
@@ -547,7 +570,7 @@ export default function App() {
                       language={language}
                       onSetStart={id => setStartId(id)}
                       onSetEnd={id => setEndId(id)}
-                      mapHeight="640px"
+                      mapHeight="780px"
                       selectedIds={selectedIds}
                       onToggleItinerary={handleToggleItinerary}
                       onSelectItinerary={handleSelectItinerary}

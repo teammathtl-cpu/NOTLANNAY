@@ -66,16 +66,14 @@ export const MiniLocationMap: React.FC<MiniLocationMapProps> = ({
 
     L.control.zoom({ position: 'topright' }).addTo(map);
 
-    // Main location marker
+    // Main location marker (compact and clean)
     const mainIcon = L.divIcon({
       className: 'mini-target-marker',
       html: `
         <div style="position: relative; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%);">
-          <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background: rgba(225, 29, 72, 0.3); animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-          <div style="width: 28px; height: 28px; border-radius: 50%; background: #e11d48; color: #fff; font-weight: 900; font-size: 12px; border: 2.5px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.45);">
-            📍
-          </div>
-          <div style="position: absolute; bottom: -20px; background: #0f172a; color: #fff; font-size: 10px; font-weight: 800; padding: 1.5px 6px; border-radius: 5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+          <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background: rgba(225, 29, 72, 0.3); animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+          <div style="width: 14px; height: 14px; border-radius: 50%; background: #e11d48; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.45);"></div>
+          <div style="position: absolute; bottom: -14px; background: rgba(15, 23, 42, 0.92); color: #fff; font-size: 9px; font-weight: 800; padding: 0.5px 5px; border-radius: 4px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
             ${location.label}
           </div>
         </div>

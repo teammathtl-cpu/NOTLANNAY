@@ -84,6 +84,24 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
     return set;
   }, [highlightedPath]);
 
+  // Deduplicated undirected routes so bidirectional edges don't overlap labels
+  const uniqueUndirectedRoutes = useMemo(() => {
+    const seen = new Set<string>();
+    const list: Route[] = [];
+    routes.forEach(r => {
+      const pairKey = [r.from, r.to].sort().join('__');
+      if (!seen.has(pairKey)) {
+        seen.add(pairKey);
+        list.push(r);
+      }
+    });
+    return list;
+  }, [routes]);
+
+  const arterialCount = useMemo(() => {
+    return uniqueUndirectedRoutes.filter(r => r.isArterial !== false).length;
+  }, [uniqueUndirectedRoutes]);
+
   // Center view on mount
   useEffect(() => {
     if (containerRef.current) {
@@ -204,9 +222,13 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
           className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
             showAllRoutes ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'hover:bg-slate-800 text-slate-400'
           }`}
-          title={isVi ? 'Chuyển đổi giữa tuyến đường chính và toàn bộ 91 liên kết' : 'Toggle all 91 links vs arterial'}
+          title={isVi ? `Chuyển đổi giữa tuyến đường chính và toàn bộ ${uniqueUndirectedRoutes.length} liên kết` : `Toggle all ${uniqueUndirectedRoutes.length} links vs arterial`}
         >
-          <span>{showAllRoutes ? (isVi ? 'Tất cả 91 tuyến' : 'All 91 Edges') : (isVi ? '31 Tuyến chính' : 'Arterial Routes')}</span>
+          <span>
+            {showAllRoutes
+              ? (isVi ? `Tất cả ${uniqueUndirectedRoutes.length} tuyến` : `All ${uniqueUndirectedRoutes.length} Edges`)
+              : (isVi ? `${arterialCount} Tuyến chính` : 'Arterial Routes')}
+          </span>
         </button>
       </div>
 
@@ -246,7 +268,7 @@ export const GraphCanvas: React.FC<GraphCanvasProps> = ({
 
         {/* 1. Routes (Edges) */}
         <g className="routes-group">
-          {routes
+          {uniqueUndirectedRoutes
             .filter(route => {
               if (showAllRoutes) return true;
               if (activePathEdges.has(`${route.from}__${route.to}`)) return true;

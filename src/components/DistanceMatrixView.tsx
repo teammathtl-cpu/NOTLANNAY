@@ -185,8 +185,8 @@ export const DistanceMatrixView: React.FC<DistanceMatrixViewProps> = ({
             </div>
             <p className="text-xs text-slate-400 mt-1">
               {isVi 
-                ? 'Đã bổ sung đầy đủ khoảng cách thực tế giữa 14 địa danh (91 cặp kết nối) xuất phát từ THPT Thăng Long' 
-                : 'Fully supplemented realistic road distances across all 14 landmarks (91 pairwise connections) centered at Thang Long High School'}
+                ? `Đã đồng bộ đầy đủ khoảng cách thực tế chuẩn xác giữa ${locations.length} địa danh (${networkStats.totalPairs} cặp kết nối đối xứng) xuất phát từ THPT Thăng Long` 
+                : `Fully synchronized standardized road distances across all ${locations.length} landmarks (${networkStats.totalPairs} symmetric pairwise connections) centered at Thang Long High School`}
             </p>
           </div>
 
@@ -399,7 +399,7 @@ export const DistanceMatrixView: React.FC<DistanceMatrixViewProps> = ({
             <School className="w-5 h-5 text-amber-400" />
             <div>
               <h3 className="font-extrabold text-white text-base">
-                {isVi ? 'Khoảng Cách Từ Tâm Điểm Đến 13 Danh Thắng Còn Lại' : 'Distances from Hub to All Other Landmarks'}
+                {isVi ? `Khoảng Cách Từ Tâm Điểm Đến ${locations.length - 1} Danh Thắng Còn Lại` : `Distances from Hub to All ${locations.length - 1} Other Landmarks`}
               </h3>
               <p className="text-xs text-slate-400">
                 {isVi 
@@ -488,7 +488,7 @@ export const DistanceMatrixView: React.FC<DistanceMatrixViewProps> = ({
           <div>
             <h3 className="font-extrabold text-white text-base flex items-center gap-2">
               <Layers className="w-5 h-5 text-emerald-400" />
-              <span>{isVi ? 'Ma Trận Khoảng Cách Toàn Bộ 14 Địa Danh (14 × 14)' : 'Complete 14 × 14 Distance Matrix Table'}</span>
+              <span>{isVi ? `Ma Trận Khoảng Cách Toàn Bộ ${locations.length} Địa Danh (${locations.length} × ${locations.length})` : `Complete ${locations.length} × ${locations.length} Distance Matrix Table`}</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               {isVi 

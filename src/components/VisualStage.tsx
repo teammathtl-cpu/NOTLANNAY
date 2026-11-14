@@ -49,7 +49,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
   const [viewMode, setViewMode] = useState<'map' | 'graph'>('map');
 
   return (
-    <div className="relative w-full h-full min-h-[620px] bg-[#fbf8f3] border border-[#d7ccbb] rounded-3xl shadow-sm overflow-hidden flex flex-col">
+    <div className="relative w-full h-full min-h-[720px] bg-[#fbf8f3] border border-[#d7ccbb] rounded-3xl shadow-sm overflow-hidden flex flex-col">
       
       {/* Top Controls Toolbar */}
       <div className="p-3 bg-[#f7f1e7] border-b border-[#e6ded1] flex flex-wrap items-center justify-between gap-2 z-20">
@@ -116,7 +116,7 @@ export const VisualStage: React.FC<VisualStageProps> = ({
       </div>
 
       {/* Visual Canvas / Map Container */}
-      <div className="flex-1 relative w-full h-full min-h-[560px]">
+      <div className="flex-1 relative w-full h-full min-h-[660px]">
         {viewMode === 'map' ? (
           <MapView
             locations={locations}

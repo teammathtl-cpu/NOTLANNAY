@@ -100,8 +100,8 @@ export const GuideShell: React.FC<GuideShellProps> = ({
   const isVi = language === 'vi';
   const locationMap = useMemo(() => new Map(locations.map(l => [l.id, l])), [locations]);
 
-  // Mode: Custom free pick (không tự chọn sẵn) vs Preset
-  const [isCustomMode, setIsCustomMode] = useState<boolean>(true);
+  // Mode: Preset (Mẫu gợi ý sẵn mặc định) vs Custom free pick
+  const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
 
   // Search & Filter in Step 1
   const [searchTerm, setSearchTerm] = useState('');
@@ -211,7 +211,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
 
   // Active chosen plan
   const activePlan = useMemo(() => {
-    return alternativePlans.find(p => p.id === activePlanId) || alternativePlans[alternativePlans.length - 1] || null;
+    return alternativePlans.find(p => p.id === activePlanId) || alternativePlans[0] || null;
   }, [alternativePlans, activePlanId]);
 
   // Dijkstra Player Steps (in Mode 3)

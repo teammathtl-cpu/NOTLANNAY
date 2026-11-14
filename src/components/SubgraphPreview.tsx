@@ -584,14 +584,15 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         const pairKey = [r.from, r.to].sort().join('__');
         if (!seen.has(pairKey)) {
           seen.add(pairKey);
-          const isTour = pathEdgeMap.has(`${r.from}__${r.to}`);
+          const isTour = pathEdgeMap.has(`${r.from}__${r.to}`) || pathEdgeMap.has(`${r.to}__${r.from}`);
+          const actualDist = getDirectDistance(r.from, r.to, routes) ?? r.distanceKm;
           edges.push({
             id: r.id,
             from: r.from,
             to: r.to,
-            distanceKm: r.distanceKm,
+            distanceKm: actualDist,
             isTourPath: isTour,
-            tourIndex: isTour ? pathEdgeMap.get(`${r.from}__${r.to}`) : undefined,
+            tourIndex: isTour ? (pathEdgeMap.get(`${r.from}__${r.to}`) || pathEdgeMap.get(`${r.to}__${r.from}`)) : undefined,
           });
         }
       }
@@ -922,7 +923,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               </marker>
             </defs>
 
-            {/* 1. Draw non-tour background edges */}
+            {/* 1. Draw non-tour background edges with Distance Badges & Interactive Click */}
             {showOtherEdges && (
               <g className="other-edges">
                 {subgraphEdges.filter(e => !e.isTourPath).map(edge => {
@@ -930,18 +931,53 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                   const p2 = graphNodePositions[edge.to];
                   if (!p1 || !p2) return null;
 
+                  const midX = (p1.x + p2.x) / 2;
+                  const midY = (p1.y + p2.y) / 2;
+
                   return (
-                    <line
+                    <g 
                       key={edge.id}
-                      x1={p1.x}
-                      y1={p1.y}
-                      x2={p2.x}
-                      y2={p2.y}
-                      stroke="#cbd5e1"
-                      strokeWidth={1.5}
-                      strokeDasharray="4 4"
-                      opacity={0.7}
-                    />
+                      className="cursor-pointer group"
+                      onClick={() => setSelectedEdgeInfo({ from: edge.from, to: edge.to, dist: edge.distanceKm })}
+                    >
+                      <line
+                        x1={p1.x}
+                        y1={p1.y}
+                        x2={p2.x}
+                        y2={p2.y}
+                        stroke="#cbd5e1"
+                        strokeWidth={1.8}
+                        strokeDasharray="4 4"
+                        opacity={0.8}
+                        className="group-hover:stroke-amber-500 group-hover:stroke-[2.5px] transition-all"
+                      />
+                      {showWeights && (
+                        <g transform={`translate(${midX}, ${midY})`}>
+                          <rect
+                            x={-22}
+                            y={-9}
+                            width={44}
+                            height={18}
+                            rx={9}
+                            fill="#ffffff"
+                            stroke="#cbd5e1"
+                            strokeWidth={1.2}
+                            className="group-hover:fill-amber-50 group-hover:stroke-amber-400 shadow-2xs transition-colors"
+                          />
+                          <text
+                            x={0}
+                            y={3.5}
+                            textAnchor="middle"
+                            fontSize={9.5}
+                            fontWeight="800"
+                            fill="#64748b"
+                            className="group-hover:fill-amber-900"
+                          >
+                            {edge.distanceKm}k
+                          </text>
+                        </g>
+                      )}
+                    </g>
                   );
                 })}
               </g>

@@ -1397,7 +1397,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "TL__CVTN",
     "from": "TL",
     "to": "CVTN",
-    "distanceKm": 2.2,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
@@ -1418,14 +1418,14 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "TL__HT",
     "from": "TL",
     "to": "HT",
-    "distanceKm": 7.5,
+    "distanceKm": 9.3,
     "isArterial": true
   },
   {
     "id": "DHBKHN__TL",
     "from": "DHBKHN",
     "to": "TL",
-    "distanceKm": 1.2,
+    "distanceKm": 1.4,
     "isArterial": true
   },
   {
@@ -1460,21 +1460,21 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "CVTN__TL",
     "from": "CVTN",
     "to": "TL",
-    "distanceKm": 2.3,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
     "id": "CVTN__DHBKHN",
     "from": "CVTN",
     "to": "DHBKHN",
-    "distanceKm": 1.4,
+    "distanceKm": 2,
     "isArterial": true
   },
   {
     "id": "CVTN__VMQTG",
     "from": "CVTN",
     "to": "VMQTG",
-    "distanceKm": 4.9,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
@@ -1488,28 +1488,28 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "CVTN__HT",
     "from": "CVTN",
     "to": "HT",
-    "distanceKm": 5.3,
+    "distanceKm": 6.3,
     "isArterial": false
   },
   {
     "id": "VMQTG__TL",
     "from": "VMQTG",
     "to": "TL",
-    "distanceKm": 4.3,
+    "distanceKm": 4.8,
     "isArterial": false
   },
   {
     "id": "VMQTG__DHBKHN",
     "from": "VMQTG",
     "to": "DHBKHN",
-    "distanceKm": 3.6,
+    "distanceKm": 4.2,
     "isArterial": false
   },
   {
     "id": "VMQTG__CVTN",
     "from": "VMQTG",
     "to": "CVTN",
-    "distanceKm": 2.5,
+    "distanceKm": 2.6,
     "isArterial": true
   },
   {
@@ -1530,28 +1530,28 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "LCT__TL",
     "from": "LCT",
     "to": "TL",
-    "distanceKm": 5.8,
+    "distanceKm": 5.6,
     "isArterial": false
   },
   {
     "id": "LCT__DHBKHN",
     "from": "LCT",
     "to": "DHBKHN",
-    "distanceKm": 5.1,
+    "distanceKm": 5,
     "isArterial": false
   },
   {
     "id": "LCT__CVTN",
     "from": "LCT",
     "to": "CVTN",
-    "distanceKm": 3.8,
+    "distanceKm": 3.7,
     "isArterial": false
   },
   {
     "id": "LCT__VMQTG",
     "from": "LCT",
     "to": "VMQTG",
-    "distanceKm": 1.5,
+    "distanceKm": 1.4,
     "isArterial": true
   },
   {
@@ -1565,35 +1565,35 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "HT__TL",
     "from": "HT",
     "to": "TL",
-    "distanceKm": 7.2,
+    "distanceKm": 9.3,
     "isArterial": true
   },
   {
     "id": "HT__DHBKHN",
     "from": "HT",
     "to": "DHBKHN",
-    "distanceKm": 6.5,
+    "distanceKm": 6.8,
     "isArterial": false
   },
   {
     "id": "HT__CVTN",
     "from": "HT",
     "to": "CVTN",
-    "distanceKm": 5.1,
+    "distanceKm": 6.3,
     "isArterial": false
   },
   {
     "id": "HT__VMQTG",
     "from": "HT",
     "to": "VMQTG",
-    "distanceKm": 2.7,
+    "distanceKm": 2.8,
     "isArterial": false
   },
   {
     "id": "HT__LCT",
     "from": "HT",
     "to": "LCT",
-    "distanceKm": 2.1,
+    "distanceKm": 2.2,
     "isArterial": true
   }
 ];
@@ -1605,18 +1605,18 @@ export const INITIAL_GRAPH_DATA: GraphData = {
 
 export const PRESET_SELECTIONS: PresetSelectionMap = {
   cycle: {
-    ids: ["TL", "DHBKHN", "CVTN", "VMQTG", "LCT", "HT"],
-    label: "Chu trình 6 điểm (Bảng trọng số chuẩn)",
-    desc: "THPT Thăng Long → ĐH Bách Khoa → CV Thống Nhất → Văn Miếu → Lăng Bác → Hồ Tây → THPT Thăng Long",
+    ids: ["TL", "BH", "LCT", "BTDTH", "VMQTG"],
+    label: "Chu trình 5 điểm gợi ý (Bờ Hồ – Lăng Bác – Dân tộc học – Văn Miếu)",
+    desc: "THPT Thăng Long → Bờ Hồ Hà Nội → Lăng Bác → Bảo tàng Dân tộc học → Văn Miếu → THPT Thăng Long",
     startId: "TL",
     endId: "TL"
   },
   path: {
-    ids: ["TL", "VMQTG", "HTTL", "CHUAMOTCOT", "LCT"],
-    label: "Từ cổng trường đến Lăng Bác Ba Đình",
-    desc: "THPT Thăng Long → Văn Miếu – Quốc Tử Giám → Hoàng thành Thăng Long → Chùa Một Cột → Lăng Bác",
+    ids: ["TL", "HT", "LOTTE", "LANDMARK72", "LANGLUAVANPHUC"],
+    label: "Đường đi Hamilton 5 điểm gợi ý (Từ THPT Thăng Long)",
+    desc: "THPT Thăng Long → Hồ Tây → Tòa nhà Lotte → Tòa nhà Keangnam → Làng lụa Vạn Phúc",
     startId: "TL",
-    endId: "LCT"
+    endId: "LANGLUAVANPHUC"
   },
   subset: {
     ids: ["TL", "BH", "VMQTG", "LOTTE", "BTDTH", "LANDMARK72"],

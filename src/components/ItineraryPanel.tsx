@@ -8,7 +8,8 @@ import {
 } from '../types';
 import { 
   findShortestPath, 
-  solveTour 
+  solveTour,
+  getDirectDistance 
 } from '../utils/graphAlgorithms';
 import { 
   Compass, 
@@ -103,7 +104,7 @@ export const ItineraryPanel: React.FC<ItineraryPanelProps> = ({
         steps.push({
           from: fromLoc,
           to: toLoc,
-          distanceKm: 1.5 // approximate or lookup
+          distanceKm: getDirectDistance(res.path[i], res.path[i + 1], routes) ?? 1.5
         });
       }
     }
@@ -133,7 +134,7 @@ export const ItineraryPanel: React.FC<ItineraryPanelProps> = ({
         steps.push({
           from: fromLoc,
           to: toLoc,
-          distanceKm: 2.0
+          distanceKm: getDirectDistance(tourRes.path[i], tourRes.path[i + 1], routes) ?? 2.0
         });
       }
     }
