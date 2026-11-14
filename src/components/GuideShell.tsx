@@ -123,11 +123,17 @@ export const GuideShell: React.FC<GuideShellProps> = ({
   const [dijkstraCurrentStep, setDijkstraCurrentStep] = useState<number>(0);
   const [isPlayingDijkstra, setIsPlayingDijkstra] = useState<boolean>(false);
 
+  const requiredPresetCount = useMemo(() => {
+    const presetLen = presets[currentMode]?.ids.length;
+    if (presetLen && currentMode !== 'subset') return presetLen;
+    return currentMode === 'cycle' ? 5 : currentMode === 'path' ? 6 : 2;
+  }, [presets, currentMode]);
+
   // Mode rules & copy
   const modeConfig = useMemo(() => {
     if (currentMode === 'cycle') {
       return {
-        requiredCount: 5,
+        requiredCount: requiredPresetCount,
         titleVi: 'Bài 1 — Chu Trình Hamilton Khép Kín (Xuất phát & Kết thúc tại THPT Thăng Long)',
         titleEn: 'Lesson 1 — Closed Hamiltonian Cycle (Origin & Destination at Thang Long High School)',
         storyVi: 'Xuất phát từ THPT Thăng Long, ghé thăm các danh lam thắng cảnh tiêu biểu quanh thủ đô Hà Nội và quay trở về trường. Điểm xuất phát và điểm kết thúc là cùng một địa điểm (THPT Thăng Long), tạo thành một chu trình Hamilton khép kín hoàn chỉnh.',
@@ -139,7 +145,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
       };
     } else if (currentMode === 'path') {
       return {
-        requiredCount: 5,
+        requiredCount: requiredPresetCount,
         titleVi: 'Từ cổng trường đến một điểm hẹn cuối',
         titleEn: 'From school gate to a final destination',
         storyVi: 'Chuyến tham quan xuất phát từ THPT Thăng Long và kết thúc tại một danh thắng trọng điểm (như Lăng Bác, Hoàng Thành hay Hồ Gươm), mô phỏng nhu cầu thực tế của một hành trình một chiều có chủ đích.',
@@ -162,7 +168,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
         btnBg: 'bg-[#82501f] hover:bg-[#6a4018]',
       };
     }
-  }, [currentMode]);
+  }, [currentMode, requiredPresetCount]);
 
   // Is selection ready to run
   const isSelectionReady = useMemo(() => {
@@ -171,10 +177,10 @@ export const GuideShell: React.FC<GuideShellProps> = ({
       if (currentMode === 'path') return selectedIds.length >= 2;
       return selectedIds.length >= 2;
     }
-    if (currentMode === 'cycle') return selectedIds.length === 5;
-    if (currentMode === 'path') return selectedIds.length === 5 && !!endId && endId !== startId;
+    if (currentMode === 'cycle') return selectedIds.length === requiredPresetCount;
+    if (currentMode === 'path') return selectedIds.length === requiredPresetCount && !!endId && endId !== startId;
     return selectedIds.length >= 2 && !!endId && endId !== startId;
-  }, [isCustomMode, currentMode, selectedIds, endId, startId]);
+  }, [isCustomMode, currentMode, selectedIds, endId, startId, requiredPresetCount]);
 
   // Hint message
   const selectionHint = useMemo(() => {
@@ -190,18 +196,18 @@ export const GuideShell: React.FC<GuideShellProps> = ({
         : `${count} custom stops selected. Click "Select Itinerary" to calculate!`;
     }
     if (currentMode === 'cycle') {
-      if (count < 5) return isVi ? `Mẫu có sẵn: Cần thêm ${5 - count} điểm nữa (tổng 5 điểm).` : `Preset: Need ${5 - count} more stops (5 total).`;
-      return isVi ? 'Đã đủ 5 điểm mẫu. Sẵn sàng chọn hành trình.' : '5 preset stops ready. Click Select Itinerary.';
+      if (count < requiredPresetCount) return isVi ? `Mẫu có sẵn: Cần thêm ${requiredPresetCount - count} điểm nữa (tổng ${requiredPresetCount} điểm).` : `Preset: Need ${requiredPresetCount - count} more stops (${requiredPresetCount} total).`;
+      return isVi ? `Đã đủ ${requiredPresetCount} điểm mẫu. Sẵn sàng chọn hành trình.` : `${requiredPresetCount} preset stops ready. Click Select Itinerary.`;
     } else if (currentMode === 'path') {
-      if (count < 5) return isVi ? `Mẫu có sẵn: Cần thêm ${5 - count} điểm nữa.` : `Preset: Need ${5 - count} more stops.`;
-      if (!endId || endId === startId) return isVi ? 'Đã đủ 5 điểm. Hãy chọn điểm kết thúc bên dưới.' : 'Choose destination endpoint below.';
-      return isVi ? 'Đã sẵn sàng chạy lộ trình một chiều.' : 'Ready to run one-way path.';
+      if (count < requiredPresetCount) return isVi ? `Mẫu có sẵn: Cần thêm ${requiredPresetCount - count} điểm nữa (tổng ${requiredPresetCount} điểm).` : `Preset: Need ${requiredPresetCount - count} more stops (${requiredPresetCount} total).`;
+      if (!endId || endId === startId) return isVi ? `Đã đủ ${requiredPresetCount} điểm. Hãy chọn điểm kết thúc bên dưới.` : 'Choose destination endpoint below.';
+      return isVi ? `Đã đủ ${requiredPresetCount} điểm mẫu. Sẵn sàng chạy lộ trình một chiều.` : `${requiredPresetCount} preset stops ready. Ready to run one-way path.`;
     } else {
       if (count < 2) return isVi ? `Cần thêm ít nhất ${2 - count} điểm.` : `Need at least ${2 - count} more stops.`;
       if (!endId || endId === startId) return isVi ? 'Chọn điểm kết thúc để chạy Dijkstra.' : 'Select destination endpoint.';
       return isVi ? `Đã có ${count} điểm trong tập chọn. Sẵn sàng chạy Dijkstra.` : `${count} stops in subset. Ready for Dijkstra.`;
     }
-  }, [isCustomMode, currentMode, selectedIds, endId, startId, isVi]);
+  }, [isCustomMode, currentMode, selectedIds, endId, startId, isVi, requiredPresetCount]);
 
   // Alternative Plans & Results
   const alternativePlans = useMemo(() => {
@@ -403,7 +409,7 @@ export const GuideShell: React.FC<GuideShellProps> = ({
                     ? 'bg-white text-[#133654] font-black shadow-xs'
                     : 'text-white/80 hover:text-white'
                 }`}
-                title={isVi ? 'Tự động nạp mẫu 5 địa điểm theo bài học' : 'Load 5 preset locations'}
+                title={isVi ? 'Tự động nạp mẫu địa điểm gợi ý theo bài học' : 'Load preset locations for this lesson'}
               >
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 <span>{isVi ? 'Mẫu gợi ý sẵn' : 'Preset'}</span>

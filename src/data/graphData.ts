@@ -647,6 +647,80 @@ export const INITIAL_LOCATIONS: TouristLocation[] = [
     lat: 21.0055,
     lng: 105.8433,
     displayOrder: 16
+  },
+  {
+    id: "NHL",
+    label: "Nhà hát Lớn",
+    fullName: "Nhà hát Lớn Hà Nội",
+    category: "Danh lam thắng cảnh",
+    description: "Khởi công xây dựng năm 1901 và hoàn thành năm 1911 theo nguyên mẫu Nhà hát Opéra Garnier tại Paris, Nhà hát Lớn Hà Nội là một trong những công trình kiến trúc nghệ thuật cổ điển tiêu biểu và tráng lệ bậc nhất của Thủ đô. Nằm trang trọng tại Quảng trường Cách mạng Tháng Tám ở đầu phố Tràng Tiền, công trình nổi bật với mặt tiền bề thế, các hàng cột Corinthian uy nghi, mái vòm đá phiến đen cùng nội thất lộng lẫy mang đậm phong cách Tân cổ điển Pháp. Không chỉ là nơi diễn ra nhiều sự kiện văn hóa, nghệ thuật hàn lâm và biểu diễn giao hưởng lớn, Nhà hát Lớn còn là nhân chứng lịch sử quan trọng gắn liền với Cách mạng Tháng Tám năm 1945.",
+    shortIntro: "Kiệt tác kiến trúc Tân cổ điển Pháp tại số 1 Tràng Tiền, biểu tượng văn hóa nghệ thuật và dấu ấn lịch sử tráng lệ giữa trung tâm Thủ đô.",
+    imageUrl: "/assets/aistudio/image_410f4880.png",
+    neighborhood: "Số 1 Tràng Tiền, Phường Phan Chu Trinh, Quận Hoàn Kiếm, Hà Nội, Việt Nam",
+    bestFor: "Tham quan kiến trúc cổ điển, Chụp ảnh, Thưởng thức nghệ thuật biểu diễn, Tìm hiểu lịch sử",
+    highlights: [
+      "Công trình kiến trúc Tân cổ điển Pháp xây dựng từ đầu thế kỷ XX (1901–1911)",
+      "Tọa lạc tại Số 1 Tràng Tiền – Quảng trường Cách mạng Tháng Tám",
+      "Hệ thống cột Corinthian, mái vòm cổ kính và khán phòng thính phòng sang trọng",
+      "Di tích lịch sử – kiến trúc nghệ thuật cấp Quốc gia đặc biệt"
+    ],
+    x: 625,
+    y: 430,
+    fullNameEn: "Hanoi Opera House",
+    descriptionEn: "Built between 1901 and 1911 after the Palais Garnier in Paris, the Hanoi Opera House is one of the capital's grandest architectural and cultural landmarks. Prominently located at August Revolution Square at the eastern end of Trang Tien Street, the building showcases Neoclassical French elegance with stately Corinthian columns, slate-tiled domes, and a richly decorated auditorium. Beyond hosting symphony concerts, ballet, and national cultural ceremonies, the Opera House holds deep historical significance tied to Vietnam's August Revolution of 1945.",
+    shortIntroEn: "A Neoclassical French architectural masterpiece at 1 Trang Tien Street, serving as an iconic performing arts venue and historic landmark in central Hanoi.",
+    neighborhoodEn: "1 Trang Tien Street, Phan Chu Trinh Ward, Hoan Kiem District, Hanoi, Vietnam",
+    bestForEn: "Neoclassical architecture, Photography, Performing arts, Historical sightseeing",
+    highlightsEn: [
+      "Iconic French Neoclassical architecture built between 1901 and 1911",
+      "Prime location at 1 Trang Tien Street – August Revolution Square",
+      "Grand Corinthian colonnade, historic domes, and ornate concert hall",
+      "Special National Historical and Architectural Monument"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Hanoi+Opera+House+1+Trang+Tien+Hanoi",
+    images: [
+      "/assets/aistudio/image_410f4880.png"
+    ],
+    lat: 21.0243,
+    lng: 105.8576,
+    displayOrder: 17
+  },
+  {
+    id: "BTQS",
+    label: "BT Quân sự",
+    fullName: "Bảo tàng Lịch sử Quân sự Việt Nam",
+    category: "Di tích lịch sử",
+    description: "Tọa lạc tại Km6+500 Đại lộ Thăng Long (quận Nam Từ Liêm, Hà Nội), Bảo tàng Lịch sử Quân sự Việt Nam cơ sở mới là công trình văn hóa – lịch sử quy mô hiện đại bậc nhất cả nước. Nổi bật với tòa nhà chính thiết kế cánh cung bề thế, không gian trưng bày ứng dụng công nghệ sa bàn 3D và thực tế ảo tiên tiến cùng Tháp Chiến Thắng cao 45 mét uy nghi giữa quảng trường. Bảo tàng lưu giữ và giới thiệu hàng vạn hiện vật quý giá tái hiện lịch sử dựng nước, giữ nước hào hùng của dân tộc và Quân đội nhân dân Việt Nam qua các thời kỳ.",
+    shortIntro: "Công trình bảo tàng lịch sử hiện đại trên Đại lộ Thăng Long với Tháp Chiến Thắng 45m, kiến trúc cánh cung ấn tượng và hàng vạn hiện vật quân sự quý giá.",
+    imageUrl: "/assets/aistudio/image_5cebd06b.png",
+    neighborhood: "Km6+500 Đại lộ Thăng Long, Phường Tây Mỗ – Đại Mỗ, Quận Nam Từ Liêm, Hà Nội, Việt Nam",
+    bestFor: "Tìm hiểu lịch sử quân sự, Giáo dục truyền thống, Tham quan kiến trúc hiện đại, Chụp ảnh",
+    highlights: [
+      "Tháp Chiến Thắng cao 45m biểu tượng tại quảng trường trung tâm",
+      "Kiến trúc tòa nhà chính hiện đại kết hợp không gian trưng bày ngoài trời quy mô lớn",
+      "Hàng vạn hiện vật lịch sử, khí tài và 4 bảo vật quốc gia quý giá",
+      "Trải nghiệm công nghệ tương tác 3D mapping và sa bàn lịch sử sống động"
+    ],
+    x: 90,
+    y: 510,
+    fullNameEn: "Vietnam Military History Museum",
+    descriptionEn: "Located at Km6+500 Thang Long Boulevard in Nam Tu Liem District, Hanoi, the new Vietnam Military History Museum is one of the country's largest and most modern historical landmarks. Featuring a sweeping curved colonnade building, a 45-meter-tall Victory Tower at its central plaza, and extensive indoor and outdoor exhibition grounds, the museum preserves tens of thousands of historical artifacts, military hardware, and four national treasures chronicling Vietnam's military heritage.",
+    shortIntroEn: "A landmark modern museum on Thang Long Boulevard featuring the 45m Victory Tower, sweeping contemporary architecture, and rich military history exhibits.",
+    neighborhoodEn: "Km6+500 Thang Long Boulevard, Tay Mo – Dai Mo Ward, Nam Tu Liem District, Hanoi, Vietnam",
+    bestForEn: "Military history, Educational field trips, Modern architecture, Photography",
+    highlightsEn: [
+      "Iconic 45-meter Victory Tower at the grand entrance plaza",
+      "Sweeping contemporary museum building and expansive outdoor aircraft/tank display",
+      "Tens of thousands of historical artifacts including four National Treasures",
+      "Interactive 3D mapping and immersive multimedia historical exhibits"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Vietnam+Military+History+Museum+Thang+Long+Boulevard+Hanoi",
+    images: [
+      "/assets/aistudio/image_5cebd06b.png"
+    ],
+    lat: 21.0033,
+    lng: 105.7556,
+    displayOrder: 18
   }
 ];
 
@@ -1595,6 +1669,237 @@ export const INITIAL_ROUTES: Route[] = [
     "to": "LCT",
     "distanceKm": 2.2,
     "isArterial": true
+  },
+  {
+    "id": "NHL__TL",
+    "from": "NHL",
+    "to": "TL",
+    "distanceKm": 3.4,
+    "isArterial": true
+  },
+  {
+    "id": "NHL__BH",
+    "from": "NHL",
+    "to": "BH",
+    "distanceKm": 0.8,
+    "isArterial": true
+  },
+  {
+    "id": "NHL__CDX",
+    "from": "NHL",
+    "to": "CDX",
+    "distanceKm": 2.2,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__CTL",
+    "from": "NHL",
+    "to": "CTL",
+    "distanceKm": 7.1,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__LCT",
+    "from": "NHL",
+    "to": "LCT",
+    "distanceKm": 3.6,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__LOTTE",
+    "from": "NHL",
+    "to": "LOTTE",
+    "distanceKm": 5.8,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__VMQTG",
+    "from": "NHL",
+    "to": "VMQTG",
+    "distanceKm": 3.1,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__HTTL",
+    "from": "NHL",
+    "to": "HTTL",
+    "distanceKm": 2.8,
+    "isArterial": true
+  },
+  {
+    "id": "NHL__BTDTH",
+    "from": "NHL",
+    "to": "BTDTH",
+    "distanceKm": 8.0,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__PTH",
+    "from": "NHL",
+    "to": "PTH",
+    "distanceKm": 6.8,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__HT",
+    "from": "NHL",
+    "to": "HT",
+    "distanceKm": 4.5,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__CHUAMOTCOT",
+    "from": "NHL",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 3.8,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__LANDMARK72",
+    "from": "NHL",
+    "to": "LANDMARK72",
+    "distanceKm": 9.8,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__LANGLUAVANPHUC",
+    "from": "NHL",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 12.6,
+    "isArterial": false
+  },
+  {
+    "id": "NHL__CVTN",
+    "from": "NHL",
+    "to": "CVTN",
+    "distanceKm": 2.3,
+    "isArterial": true
+  },
+  {
+    "id": "NHL__DHBKHN",
+    "from": "NHL",
+    "to": "DHBKHN",
+    "distanceKm": 3.2,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__TL",
+    "from": "BTQS",
+    "to": "TL",
+    "distanceKm": 12.3,
+    "isArterial": true
+  },
+  {
+    "id": "BTQS__BH",
+    "from": "BTQS",
+    "to": "BH",
+    "distanceKm": 13.1,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__CDX",
+    "from": "BTQS",
+    "to": "CDX",
+    "distanceKm": 13.3,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__CTL",
+    "from": "BTQS",
+    "to": "CTL",
+    "distanceKm": 7.4,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__LCT",
+    "from": "BTQS",
+    "to": "LCT",
+    "distanceKm": 11.4,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__LOTTE",
+    "from": "BTQS",
+    "to": "LOTTE",
+    "distanceKm": 8.5,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__VMQTG",
+    "from": "BTQS",
+    "to": "VMQTG",
+    "distanceKm": 11.0,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__HTTL",
+    "from": "BTQS",
+    "to": "HTTL",
+    "distanceKm": 12.1,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__BTDTH",
+    "from": "BTQS",
+    "to": "BTDTH",
+    "distanceKm": 7.8,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__PTH",
+    "from": "BTQS",
+    "to": "PTH",
+    "distanceKm": 11.9,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__HT",
+    "from": "BTQS",
+    "to": "HT",
+    "distanceKm": 12.4,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__CHUAMOTCOT",
+    "from": "BTQS",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 11.2,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__LANDMARK72",
+    "from": "BTQS",
+    "to": "LANDMARK72",
+    "distanceKm": 4.2,
+    "isArterial": true
+  },
+  {
+    "id": "BTQS__LANGLUAVANPHUC",
+    "from": "BTQS",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 5.4,
+    "isArterial": true
+  },
+  {
+    "id": "BTQS__CVTN",
+    "from": "BTQS",
+    "to": "CVTN",
+    "distanceKm": 11.7,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__DHBKHN",
+    "from": "BTQS",
+    "to": "DHBKHN",
+    "distanceKm": 11.5,
+    "isArterial": false
+  },
+  {
+    "id": "BTQS__NHL",
+    "from": "BTQS",
+    "to": "NHL",
+    "distanceKm": 13.6,
+    "isArterial": false
   }
 ];
 
@@ -1612,9 +1917,9 @@ export const PRESET_SELECTIONS: PresetSelectionMap = {
     endId: "TL"
   },
   path: {
-    ids: ["TL", "HT", "LOTTE", "LANDMARK72", "LANGLUAVANPHUC"],
-    label: "Đường đi Hamilton 5 điểm gợi ý (Từ THPT Thăng Long)",
-    desc: "THPT Thăng Long → Hồ Tây → Tòa nhà Lotte → Tòa nhà Keangnam → Làng lụa Vạn Phúc",
+    ids: ["TL", "NHL", "HT", "LOTTE", "LANDMARK72", "LANGLUAVANPHUC"],
+    label: "Đường đi Hamilton 6 điểm gợi ý (Từ THPT Thăng Long)",
+    desc: "THPT Thăng Long → Nhà hát Lớn Hà Nội → Hồ Tây → Tòa nhà Lotte → Tòa nhà Keangnam → Làng lụa Vạn Phúc",
     startId: "TL",
     endId: "LANGLUAVANPHUC"
   },
