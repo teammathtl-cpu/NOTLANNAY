@@ -721,6 +721,80 @@ export const INITIAL_LOCATIONS: TouristLocation[] = [
     lat: 21.0033,
     lng: 105.7556,
     displayOrder: 18
+  },
+  {
+    id: "BTHN",
+    label: "BT Hà Nội",
+    fullName: "Bảo tàng Hà Nội",
+    category: "Danh lam thắng cảnh",
+    description: "Khánh thành vào dịp Đại lễ 1000 năm Thăng Long – Hà Nội (năm 2010), Bảo tàng Hà Nội tọa lạc trên đường Phạm Hùng, quận Nam Từ Liêm, ngay cạnh Trung tâm Hội nghị Quốc gia. Công trình gây ấn tượng mạnh với kiến trúc kim tự tháp ngược độc đáo gồm 4 tầng nổi và 2 tầng hầm, lấy cảm hứng từ hình ảnh Chùa Một Cột vươn lên giữa hồ nước xanh mát. Bảo tàng trưng bày hàng chục nghìn tài liệu, hiện vật lịch sử, khảo cổ, văn hóa và kiến trúc, tái hiện dòng chảy hơn một thiên niên kỷ của Thăng Long – Hà Nội từ thời tiền sử đến hiện đại.",
+    shortIntro: "Công trình kiến trúc kim tự tháp ngược độc đáo trên đường Phạm Hùng, lưu giữ và trưng bày hàng chục nghìn hiện vật về lịch sử nghìn năm Thăng Long – Hà Nội.",
+    imageUrl: "/assets/aistudio/image_fdd04ee6.png",
+    neighborhood: "Đường Phạm Hùng, Phường Mễ Trì, Quận Nam Từ Liêm, Hà Nội, Việt Nam",
+    bestFor: "Tìm hiểu lịch sử Hà Nội, Tham quan kiến trúc hiện đại, Giáo dục ngoại khóa, Chụp ảnh",
+    highlights: [
+      "Kiến trúc kim tự tháp ngược đặc trưng khánh thành dịp 1000 năm Thăng Long – Hà Nội",
+      "Không gian trưng bày quy mô lớn về lịch sử, văn hóa và nghệ thuật Thủ đô",
+      "Nhiều cổ vật quý từ văn hóa Đông Sơn, gốm sứ cổ và di sản Thăng Long",
+      "Khuôn viên cây xanh, hồ nước thoáng đãng trên trục đường Phạm Hùng"
+    ],
+    x: 175,
+    y: 545,
+    fullNameEn: "Hanoi Museum",
+    descriptionEn: "Inaugurated in 2010 to commemorate the 1000th anniversary of Thang Long – Hanoi, the Hanoi Museum is located on Pham Hung Street in Nam Tu Liem District beside the National Convention Center. Its striking inverted-pyramid architecture of four upper stories and two basement levels draws inspiration from the One Pillar Pagoda rising above a tranquil courtyard. Inside, tens of thousands of archaeological, historical, and cultural artifacts chronicle more than a millennium of Hanoi's heritage from prehistoric times to the modern era.",
+    shortIntroEn: "An iconic inverted-pyramid museum on Pham Hung Street showcasing tens of thousands of artifacts celebrating Hanoi's thousand-year history.",
+    neighborhoodEn: "Pham Hung Street, Me Tri Ward, Nam Tu Liem District, Hanoi, Vietnam",
+    bestForEn: "Hanoi history, Contemporary architecture, Educational field trips, Photography",
+    highlightsEn: [
+      "Distinctive inverted-pyramid design inaugurated for Hanoi's millennial anniversary",
+      "Expansive galleries covering Hanoi's history, archaeology, and folk arts",
+      "Rare Dong Son bronze drums, ceramics, and royal Thang Long relics",
+      "Landscaped gardens and reflecting pools along Pham Hung Boulevard"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Hanoi+Museum+Pham+Hung+Hanoi",
+    images: [
+      "/assets/aistudio/image_fdd04ee6.png"
+    ],
+    lat: 21.0074,
+    lng: 105.7850,
+    displayOrder: 19
+  },
+  {
+    id: "NTL",
+    label: "Nhà thờ Lớn",
+    fullName: "Nhà thờ Lớn Hà Nội",
+    category: "Di tích lịch sử",
+    description: "Khánh thành vào dịp Giáng sinh năm 1886, Nhà thờ Lớn Hà Nội (Nhà thờ Chính tòa Thánh Giuse) tọa lạc tại số 40 phố Nhà Chung, ngay cạnh hồ Hoàn Kiếm. Công trình mang đậm dấu ấn kiến trúc Gothic trung cổ châu Âu với hai tháp chuông cao vút, những ô cửa vòm nhọn cùng mặt tiền phủ màu rêu phong cổ kính đặc trưng của Hà Nội xưa. Không chỉ là trung tâm sinh hoạt tôn giáo lâu đời, khu vực quảng trường Nhà thờ Lớn còn là điểm hẹn văn hóa, dạo phố và chụp ảnh nổi tiếng giữa lòng Phố cổ.",
+    shortIntro: "Nhà thờ Chính tòa Thánh Giuse cổ kính mang phong cách kiến trúc Gothic châu Âu tại số 40 Nhà Chung, biểu tượng kiến trúc hơn 130 năm tuổi cạnh Hồ Gươm.",
+    imageUrl: "/assets/aistudio/image_250e511e.png",
+    neighborhood: "Số 40 Phố Nhà Chung, Phường Hàng Trống, Quận Hoàn Kiếm, Hà Nội, Việt Nam",
+    bestFor: "Tham quan kiến trúc Gothic cổ kính, Chụp ảnh, Dạo phố cổ, Khám phá văn hóa Hà Nội",
+    highlights: [
+      "Kiến trúc Gothic châu Âu cổ điển khánh thành năm 1886 với hai tháp chuông cao vút",
+      "Tọa lạc tại Số 40 Phố Nhà Chung, cách Hồ Hoàn Kiếm chỉ vài phút đi bộ",
+      "Mặt tiền đá rêu phong cổ kính cùng các ô cửa kính màu nghệ thuật đặc sắc",
+      "Không gian quảng trường nhộn nhịp mang đậm nhịp sống phố cổ Hà Nội"
+    ],
+    x: 545,
+    y: 410,
+    fullNameEn: "St. Joseph's Cathedral (Hanoi Big Church)",
+    descriptionEn: "Consecrated on Christmas 1886, St. Joseph's Cathedral—widely known as Nha Tho Lon (Hanoi Big Church)—stands at 40 Nha Chung Street just west of Hoan Kiem Lake. Built in the Neo-Gothic style inspired by Notre-Dame de Paris, the cathedral is renowned for its twin bell towers, pointed arch windows, and weathered stone facade that exudes historic Hanoi charm. Beyond its role as a historic religious landmark, the surrounding square is one of the Old Quarter's liveliest cultural gathering spots.",
+    shortIntroEn: "A Neo-Gothic landmark built in 1886 at 40 Nha Chung Street, famous for its twin bell towers and historic charm near Hoan Kiem Lake.",
+    neighborhoodEn: "40 Nha Chung Street, Hang Trong Ward, Hoan Kiem District, Hanoi, Vietnam",
+    bestForEn: "Gothic architecture, Photography, Old Quarter strolls, Cultural exploration",
+    highlightsEn: [
+      "Neo-Gothic cathedral completed in 1886 with iconic twin bell towers",
+      "Prime Old Quarter location at 40 Nha Chung Street near Hoan Kiem Lake",
+      "Weathered historic stone facade and ornate stained-glass windows",
+      "Vibrant public square celebrated for Hanoi's street life and culture"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=St+Joseph+Cathedral+Hanoi",
+    images: [
+      "/assets/aistudio/image_250e511e.png"
+    ],
+    lat: 21.0287,
+    lng: 105.8490,
+    displayOrder: 20
   }
 ];
 
@@ -1899,6 +1973,265 @@ export const INITIAL_ROUTES: Route[] = [
     "from": "BTQS",
     "to": "NHL",
     "distanceKm": 13.6,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__TL",
+    "from": "BTHN",
+    "to": "TL",
+    "distanceKm": 8.4,
+    "isArterial": true
+  },
+  {
+    "id": "BTHN__BH",
+    "from": "BTHN",
+    "to": "BH",
+    "distanceKm": 9.3,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__CDX",
+    "from": "BTHN",
+    "to": "CDX",
+    "distanceKm": 9.6,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__CTL",
+    "from": "BTHN",
+    "to": "CTL",
+    "distanceKm": 4.2,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__LCT",
+    "from": "BTHN",
+    "to": "LCT",
+    "distanceKm": 7.7,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__LOTTE",
+    "from": "BTHN",
+    "to": "LOTTE",
+    "distanceKm": 5.0,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__VMQTG",
+    "from": "BTHN",
+    "to": "VMQTG",
+    "distanceKm": 7.2,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__HTTL",
+    "from": "BTHN",
+    "to": "HTTL",
+    "distanceKm": 8.3,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__BTDTH",
+    "from": "BTHN",
+    "to": "BTDTH",
+    "distanceKm": 5.1,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__PTH",
+    "from": "BTHN",
+    "to": "PTH",
+    "distanceKm": 8.7,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__HT",
+    "from": "BTHN",
+    "to": "HT",
+    "distanceKm": 8.8,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__CHUAMOTCOT",
+    "from": "BTHN",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 7.4,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__LANDMARK72",
+    "from": "BTHN",
+    "to": "LANDMARK72",
+    "distanceKm": 1.4,
+    "isArterial": true
+  },
+  {
+    "id": "BTHN__LANGLUAVANPHUC",
+    "from": "BTHN",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 5.3,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__CVTN",
+    "from": "BTHN",
+    "to": "CVTN",
+    "distanceKm": 7.8,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__DHBKHN",
+    "from": "BTHN",
+    "to": "DHBKHN",
+    "distanceKm": 7.6,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__NHL",
+    "from": "BTHN",
+    "to": "NHL",
+    "distanceKm": 9.7,
+    "isArterial": false
+  },
+  {
+    "id": "BTHN__BTQS",
+    "from": "BTHN",
+    "to": "BTQS",
+    "distanceKm": 3.8,
+    "isArterial": true
+  },
+  {
+    "id": "NTL__TL",
+    "from": "NTL",
+    "to": "TL",
+    "distanceKm": 3.9,
+    "isArterial": true
+  },
+  {
+    "id": "NTL__BH",
+    "from": "NTL",
+    "to": "BH",
+    "distanceKm": 0.4,
+    "isArterial": true
+  },
+  {
+    "id": "NTL__CDX",
+    "from": "NTL",
+    "to": "CDX",
+    "distanceKm": 1.5,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__CTL",
+    "from": "NTL",
+    "to": "CTL",
+    "distanceKm": 6.0,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__LCT",
+    "from": "NTL",
+    "to": "LCT",
+    "distanceKm": 2.3,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__LOTTE",
+    "from": "NTL",
+    "to": "LOTTE",
+    "distanceKm": 4.8,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__VMQTG",
+    "from": "NTL",
+    "to": "VMQTG",
+    "distanceKm": 2.0,
+    "isArterial": true
+  },
+  {
+    "id": "NTL__HTTL",
+    "from": "NTL",
+    "to": "HTTL",
+    "distanceKm": 1.6,
+    "isArterial": true
+  },
+  {
+    "id": "NTL__BTDTH",
+    "from": "NTL",
+    "to": "BTDTH",
+    "distanceKm": 6.8,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__PTH",
+    "from": "NTL",
+    "to": "PTH",
+    "distanceKm": 5.5,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__HT",
+    "from": "NTL",
+    "to": "HT",
+    "distanceKm": 3.3,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__CHUAMOTCOT",
+    "from": "NTL",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 2.4,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__LANDMARK72",
+    "from": "NTL",
+    "to": "LANDMARK72",
+    "distanceKm": 8.9,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__LANGLUAVANPHUC",
+    "from": "NTL",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 12.0,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__CVTN",
+    "from": "NTL",
+    "to": "CVTN",
+    "distanceKm": 1.9,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__DHBKHN",
+    "from": "NTL",
+    "to": "DHBKHN",
+    "distanceKm": 3.4,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__NHL",
+    "from": "NTL",
+    "to": "NHL",
+    "distanceKm": 1.3,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__BTQS",
+    "from": "NTL",
+    "to": "BTQS",
+    "distanceKm": 12.6,
+    "isArterial": false
+  },
+  {
+    "id": "NTL__BTHN",
+    "from": "NTL",
+    "to": "BTHN",
+    "distanceKm": 8.8,
     "isArterial": false
   }
 ];
