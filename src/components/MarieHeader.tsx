@@ -89,7 +89,7 @@ export const MarieHeader: React.FC<MarieHeaderProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-base sm:text-lg font-black tracking-tight text-[#133654]">
-                  {isVi ? 'Du Lịch Vòng Quanh Thăng Long' : 'Thang Long Tour Explorer'}
+                  {isVi ? 'Du lịch vòng quanh Hà Nội cùng với Thanglonger' : 'Hanoi Tour Explorer with Thanglonger'}
                 </h1>
                 <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-[#133654]/10 text-[#133654] border border-[#133654]/20">
                   THPT Thăng Long

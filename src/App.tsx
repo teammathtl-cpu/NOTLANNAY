@@ -193,7 +193,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_28%),linear-gradient(180deg,#f5efe4_0%,#efe7da_52%,#ece3d5_100%)] text-slate-900 flex flex-col font-sans">
       
-      {/* Editorial Header (Du Lịch Vòng Quanh Thăng Long) */}
+      {/* Editorial Header (Du lịch vòng quanh Hà Nội cùng với Thanglonger) */}
       <MarieHeader
         currentMode={currentMode}
         setCurrentMode={handleSwitchMode}
