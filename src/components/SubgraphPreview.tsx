@@ -502,12 +502,12 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
     const canvasWidth = 720;
     const canvasHeight = 440;
     const cx = canvasWidth / 2;
-    const cy = canvasHeight / 2 + 10;
+    const cy = canvasHeight / 2 + 6;
 
     if (layoutStyle === 'topology') {
       if (currentMode === 'cycle') {
         const rx = Math.min(270, 160 + count * 15);
-        const ry = Math.min(160, 110 + count * 7);
+        const ry = Math.min(142, 105 + count * 6);
 
         orderedTourNodeIds.forEach((id, idx) => {
           const angle = -Math.PI / 2 + (idx * 2 * Math.PI) / count;
@@ -517,14 +517,14 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
           };
         });
       } else {
-        const marginX = 80;
+        const marginX = 76;
         const availableW = canvasWidth - marginX * 2;
         const stepX = availableW / Math.max(1, count - 1);
 
         orderedTourNodeIds.forEach((id, idx) => {
           const x = marginX + idx * stepX;
-          const wave = Math.sin((idx / Math.max(1, count - 1)) * Math.PI) * 90;
-          const y = cy - 40 + (idx % 2 === 0 ? -wave * 0.4 : wave * 0.6);
+          const wave = Math.sin((idx / Math.max(1, count - 1)) * Math.PI) * 55 + 32;
+          const y = 225 + (idx % 2 === 0 ? -wave : wave);
           positions[id] = {
             x: Math.round(x),
             y: Math.round(y),
@@ -549,8 +549,8 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         const nx = (loc.x - (minX - padX)) / spanX;
         const ny = (loc.y - (minY - padY)) / spanY;
         positions[loc.id] = {
-          x: Math.round(70 + nx * 580),
-          y: Math.round(70 + ny * 300),
+          x: Math.round(74 + nx * 572),
+          y: Math.round(82 + ny * 265),
         };
       });
     }
@@ -906,6 +906,9 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
             style={{ transform: `scale(${scale})` }}
           >
             <defs>
+              <clipPath id="subgraph-node-photo-clip">
+                <circle cx="0" cy="0" r="24" />
+              </clipPath>
               <filter id="subgraph-glow-gold" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3.5" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
@@ -913,7 +916,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <marker
                 id="arrow-subgraph"
                 viewBox="0 0 10 10"
-                refX="22"
+                refX="28"
                 refY="5"
                 markerWidth="6"
                 markerHeight="6"
@@ -1052,7 +1055,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               })}
             </g>
 
-            {/* 3. Draw Nodes */}
+            {/* 3. Draw Nodes (Circular Location Photos + Top/Bottom Adaptive Labels) */}
             <g className="nodes">
               {orderedTourNodeIds.map((id, idx) => {
                 const pos = graphNodePositions[id];
@@ -1061,6 +1064,13 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
                 const isSchool = id === 'TL';
                 const isLast = id === effectivePath[effectivePath.length - 1] && currentMode !== 'cycle';
+                const photoUrl = loc.imageUrl || loc.images?.[0];
+                const ringColor = isSchool ? '#f59e0b' : isLast ? '#e11d48' : '#059669';
+                const midY = layoutStyle === 'topology' && currentMode === 'cycle' ? 226 : 225;
+                const isLowerHalf = pos.y > midY;
+                const labelOffsetY = isLowerHalf ? 32 : -52;
+                const schoolBadgeOffsetY = isLowerHalf ? -46 : 30;
+                const badgeOffsetY = isLowerHalf ? -18 : 18;
 
                 return (
                   <g
@@ -1069,9 +1079,34 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                     className="cursor-pointer group"
                     onClick={() => onSelectLocation?.(loc)}
                   >
+                    {/* Location Name Pill: above for upper half, below for lower half */}
+                    <g transform={`translate(0, ${labelOffsetY})`}>
+                      <rect
+                        x={-53}
+                        y={0}
+                        width={106}
+                        height={21}
+                        rx={7}
+                        fill="rgba(19, 54, 84, 0.96)"
+                        stroke={ringColor}
+                        strokeWidth={1.1}
+                        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.18))"
+                      />
+                      <text
+                        x={0}
+                        y={13.5}
+                        textAnchor="middle"
+                        fontSize={10}
+                        fontWeight="800"
+                        fill="#ffffff"
+                      >
+                        {loc.label.length > 14 ? `${loc.label.slice(0, 13)}…` : loc.label}
+                      </text>
+                    </g>
+
                     {isSchool && (
                       <circle
-                        r={30}
+                        r={31}
                         fill="none"
                         stroke="#f59e0b"
                         strokeWidth={2}
@@ -1081,58 +1116,78 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                       />
                     )}
 
-                    <circle
-                      r={23}
-                      fill={isSchool ? '#133654' : isLast ? '#e11d48' : '#059669'}
-                      stroke="#ffffff"
-                      strokeWidth={3}
-                      filter="drop-shadow(0 4px 6px rgba(0,0,0,0.25))"
-                      className="group-hover:scale-110 transition-transform"
-                    />
+                    {/* Outer ring + fallback colored circle */}
+                    <g className="group-hover:scale-110 transition-transform" style={{ transformOrigin: '0 0' }}>
+                      <circle
+                        r={26}
+                        fill={isSchool ? '#133654' : isLast ? '#e11d48' : '#059669'}
+                        stroke="#ffffff"
+                        strokeWidth={2.5}
+                        filter="drop-shadow(0 4px 7px rgba(0,0,0,0.28))"
+                      />
 
-                    <text
-                      x={0}
-                      y={-2}
-                      textAnchor="middle"
-                      fontSize={11}
-                      fontWeight="900"
-                      fill="#ffffff"
-                    >
-                      {isSchool ? 'TL' : isLast ? '🏁' : `#${idx + 1}`}
-                    </text>
+                      <text
+                        x={0}
+                        y={4}
+                        textAnchor="middle"
+                        fontSize={11}
+                        fontWeight="900"
+                        fill="#ffffff"
+                      >
+                        {isSchool ? 'TL' : isLast ? '🏁' : `#${idx + 1}`}
+                      </text>
+
+                      {photoUrl && (
+                        <image
+                          href={photoUrl}
+                          x={-24}
+                          y={-24}
+                          width={48}
+                          height={48}
+                          preserveAspectRatio="xMidYMid slice"
+                          clipPath="url(#subgraph-node-photo-clip)"
+                          onError={e => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      )}
+
+                      <circle
+                        r={24.5}
+                        fill="none"
+                        stroke={ringColor}
+                        strokeWidth={2.5}
+                      />
+
+                      {/* Corner sequence badge */}
+                      <g transform={`translate(18, ${badgeOffsetY})`}>
+                        <circle
+                          r={9.5}
+                          fill={isSchool ? '#f59e0b' : isLast ? '#e11d48' : '#133654'}
+                          stroke="#ffffff"
+                          strokeWidth={1.6}
+                        />
+                        <text
+                          x={0}
+                          y={3.2}
+                          textAnchor="middle"
+                          fontSize={8.5}
+                          fontWeight="900"
+                          fill={isSchool ? '#0f172a' : '#ffffff'}
+                        >
+                          {isSchool ? 'TL' : isLast ? '🏁' : idx + 1}
+                        </text>
+                      </g>
+                    </g>
 
                     {isSchool && (
-                      <g transform="translate(0, -29)">
-                        <rect x={-18} y={-8} width={36} height={14} rx={4} fill="#f59e0b" />
-                        <text x={0} y={2} textAnchor="middle" fontSize={8.5} fontWeight="900" fill="#0f172a">
+                      <g transform={`translate(0, ${schoolBadgeOffsetY})`}>
+                        <rect x={-26} y={0} width={52} height={14} rx={4} fill="#f59e0b" />
+                        <text x={0} y={10} textAnchor="middle" fontSize={8} fontWeight="900" fill="#0f172a">
                           TRƯỜNG
                         </text>
                       </g>
                     )}
-
-                    <g transform="translate(0, 26)">
-                      <rect
-                        x={-45}
-                        y={0}
-                        width={90}
-                        height={20}
-                        rx={6}
-                        fill="rgba(19, 54, 84, 0.95)"
-                        stroke="#f59e0b"
-                        strokeWidth={0.8}
-                        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.15))"
-                      />
-                      <text
-                        x={0}
-                        y={13}
-                        textAnchor="middle"
-                        fontSize={10}
-                        fontWeight="800"
-                        fill="#ffffff"
-                      >
-                        {loc.label.length > 12 ? `${loc.label.slice(0, 11)}…` : loc.label}
-                      </text>
-                    </g>
                   </g>
                 );
               })}
