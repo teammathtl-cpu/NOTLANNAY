@@ -1209,7 +1209,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "VMQTG__HTTL",
     "from": "VMQTG",
     "to": "HTTL",
-    "distanceKm": 2.2,
+    "distanceKm": 1.2,
     "isArterial": true
   },
   {
@@ -2257,10 +2257,10 @@ export const PRESET_SELECTIONS: PresetSelectionMap = {
     endId: "LANGLUAVANPHUC"
   },
   subset: {
-    ids: ["TL", "BH", "VMQTG", "LOTTE", "BTDTH", "LANDMARK72"],
-    label: "Tập hợp điểm Đông - Tây (Dijkstra)",
-    desc: "THPT Thăng Long → Bờ Hồ → Văn Miếu → Lotte Center → Bảo tàng Dân tộc học → Keangnam Landmark 72",
+    ids: ["TL", "VMQTG", "HTTL", "LCT", "BH", "HT"],
+    label: "Tập hợp 6 điểm Trung tâm – Hồ Tây (Dijkstra)",
+    desc: "THPT Thăng Long → Văn Miếu → Hoàng thành Thăng Long → Lăng Bác → Bờ Hồ → Hồ Tây",
     startId: "TL",
-    endId: "LANDMARK72"
+    endId: "HT"
   }
 };

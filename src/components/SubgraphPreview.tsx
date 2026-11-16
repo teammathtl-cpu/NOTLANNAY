@@ -153,13 +153,13 @@ const PlanMiniMap: React.FC<{
         };
       });
     } else {
-      const startX = 28;
-      const endX = 212;
+      const startX = 32;
+      const endX = 208;
       const stepX = (endX - startX) / Math.max(1, count - 1);
       uniqueNodes.forEach((id, idx) => {
-        const x = startX + idx * stepX;
-        const wave = Math.sin((idx / Math.max(1, count - 1)) * Math.PI) * 26;
-        const y = cy + (idx % 2 === 0 ? -wave * 0.7 : wave * 0.7);
+        const x = count === 1 ? cx : startX + idx * stepX;
+        const arc = count <= 2 ? 0 : Math.sin((idx / Math.max(1, count - 1)) * Math.PI) * 34;
+        const y = cy + 8 - arc;
         pos[id] = {
           x: Math.round(x),
           y: Math.round(y),
@@ -210,8 +210,8 @@ const PlanMiniMap: React.FC<{
           </div>
         ) : (
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-white/95 border border-slate-300/90 shadow-2xs backdrop-blur-xs text-[9px] font-black text-slate-700">
-            <span className="text-[#133654]">🔄</span>
-            <span className="text-[7.5px] text-slate-500 font-bold">Topo Elip</span>
+            <span className="text-[#133654]">{isCycle ? '🔄' : '🔀'}</span>
+            <span className="text-[7.5px] text-slate-500 font-bold">{isCycle ? 'Topo Elip' : 'Topo Tuyến'}</span>
           </div>
         )}
       </div>
@@ -221,7 +221,7 @@ const PlanMiniMap: React.FC<{
         {layoutMode === 'geographic' ? (
           <span className="text-slate-500">📍 Tọa độ thực tế Hà Nội</span>
         ) : (
-          <span className="text-slate-400">🔄 Sơ đồ chu trình topo</span>
+          <span className="text-slate-400">{isCycle ? '🔄 Sơ đồ chu trình topo' : '🔀 Sơ đồ lộ trình topo'}</span>
         )}
       </div>
 
@@ -474,10 +474,38 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
     return calculateTravelTimes(Number(totalPreviewDistance) || 0);
   }, [totalPreviewDistance]);
 
-  // Unique nodes in tour order
+  // Ordered nodes: for cycle/path keep tour order; for subset keep start -> visitedMiddle -> end -> unvisited
   const orderedTourNodeIds = useMemo(() => {
     const list: string[] = [];
     const seen = new Set<string>();
+
+    if (currentMode !== 'cycle') {
+      const targetEnd = endId || effectivePath[effectivePath.length - 1];
+      const visitedSet = new Set(effectivePath);
+
+      if (startId && selectedIds.includes(startId)) {
+        seen.add(startId);
+        list.push(startId);
+      }
+      effectivePath.forEach(id => {
+        if (id !== startId && id !== targetEnd && !seen.has(id)) {
+          seen.add(id);
+          list.push(id);
+        }
+      });
+      if (targetEnd && targetEnd !== startId && selectedIds.includes(targetEnd) && !seen.has(targetEnd)) {
+        seen.add(targetEnd);
+        list.push(targetEnd);
+      }
+      selectedIds.forEach(id => {
+        if (!visitedSet.has(id) && !seen.has(id)) {
+          seen.add(id);
+          list.push(id);
+        }
+      });
+      return list;
+    }
+
     effectivePath.forEach(id => {
       if (!seen.has(id)) {
         seen.add(id);
@@ -491,7 +519,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
       }
     });
     return list;
-  }, [effectivePath, selectedIds]);
+  }, [effectivePath, selectedIds, currentMode, startId, endId]);
 
   // Graph Node Positions (Topology vs Geographic)
   const graphNodePositions = useMemo(() => {
@@ -517,17 +545,47 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
           };
         });
       } else {
-        const marginX = 76;
-        const availableW = canvasWidth - marginX * 2;
-        const stepX = availableW / Math.max(1, count - 1);
+        // Convex s-t ellipse layout: startId at far left, endId at far right,
+        // visited path stops spaced evenly along top arc, unvisited subset nodes along bottom arc
+        const rx = Math.min(265, 175 + count * 15);
+        const ry = Math.min(130, 95 + count * 6);
+        const sId = startId || orderedTourNodeIds[0];
+        const eId = endId || effectivePath[effectivePath.length - 1] || orderedTourNodeIds[count - 1];
+        const visitedSet = new Set(effectivePath);
 
-        orderedTourNodeIds.forEach((id, idx) => {
-          const x = marginX + idx * stepX;
-          const wave = Math.sin((idx / Math.max(1, count - 1)) * Math.PI) * 55 + 32;
-          const y = 225 + (idx % 2 === 0 ? -wave : wave);
+        const visitedMiddle = effectivePath.filter(id => id !== sId && id !== eId);
+        const unvisitedNodes = orderedTourNodeIds.filter(
+          id => id !== sId && id !== eId && !visitedSet.has(id)
+        );
+
+        if (sId) {
+          positions[sId] = {
+            x: Math.round(cx - rx),
+            y: Math.round(cy),
+          };
+        }
+        if (eId && eId !== sId) {
+          positions[eId] = {
+            x: Math.round(cx + rx),
+            y: Math.round(cy),
+          };
+        }
+
+        const mCount = visitedMiddle.length;
+        visitedMiddle.forEach((id, k) => {
+          const angle = -Math.PI + ((k + 1) * Math.PI) / (mCount + 1);
           positions[id] = {
-            x: Math.round(x),
-            y: Math.round(y),
+            x: Math.round(cx + rx * Math.cos(angle)),
+            y: Math.round(cy + ry * Math.sin(angle)),
+          };
+        });
+
+        const uCount = unvisitedNodes.length;
+        unvisitedNodes.forEach((id, k) => {
+          const angle = Math.PI - ((k + 1) * Math.PI) / (uCount + 1);
+          positions[id] = {
+            x: Math.round(cx + rx * Math.cos(angle)),
+            y: Math.round(cy + ry * Math.sin(angle)),
           };
         });
       }
@@ -540,23 +598,62 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         if (loc.y > maxY) maxY = loc.y;
       });
 
-      const padX = (maxX - minX) * 0.15 || 50;
-      const padY = (maxY - minY) * 0.15 || 50;
-      const spanX = (maxX - minX + padX * 2) || 1;
-      const spanY = (maxY - minY + padY * 2) || 1;
+      const spanRawX = maxX - minX || 100;
+      const spanRawY = maxY - minY || 100;
+      const padX = spanRawX * 0.06;
+      const padY = spanRawY * 0.06;
+      const spanX = (spanRawX + padX * 2) || 1;
+      const spanY = (spanRawY + padY * 2) || 1;
+
+      const geoMinX = 92;
+      const geoMaxX = 748;
+      const geoMinY = 82;
+      const geoMaxY = 516;
 
       selectedLocations.forEach(loc => {
         const nx = (loc.x - (minX - padX)) / spanX;
         const ny = (loc.y - (minY - padY)) / spanY;
         positions[loc.id] = {
-          x: Math.round(74 + nx * 572),
-          y: Math.round(82 + ny * 265),
+          x: geoMinX + nx * (geoMaxX - geoMinX),
+          y: geoMinY + ny * (geoMaxY - geoMinY),
+        };
+      });
+
+      // Gentle repulsion pass so dense central landmarks have plenty of room for photos, labels & weights
+      const ids = selectedLocations.map(l => l.id);
+      const minSep = 138;
+      for (let iter = 0; iter < 40; iter++) {
+        for (let i = 0; i < ids.length; i++) {
+          for (let j = i + 1; j < ids.length; j++) {
+            const p1 = positions[ids[i]];
+            const p2 = positions[ids[j]];
+            if (!p1 || !p2) continue;
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const dist = Math.hypot(dx, dy) || 0.01;
+            if (dist < minSep) {
+              const push = (minSep - dist) * 0.35;
+              const ux = dx / dist;
+              const uy = dy / dist;
+              p1.x = Math.max(geoMinX, Math.min(geoMaxX, p1.x - ux * push));
+              p1.y = Math.max(geoMinY, Math.min(geoMaxY, p1.y - uy * push));
+              p2.x = Math.max(geoMinX, Math.min(geoMaxX, p2.x + ux * push));
+              p2.y = Math.max(geoMinY, Math.min(geoMaxY, p2.y + uy * push));
+            }
+          }
+        }
+      }
+
+      ids.forEach(id => {
+        positions[id] = {
+          x: Math.round(positions[id].x),
+          y: Math.round(positions[id].y),
         };
       });
     }
 
     return positions;
-  }, [orderedTourNodeIds, selectedLocations, layoutStyle, currentMode]);
+  }, [orderedTourNodeIds, selectedLocations, layoutStyle, currentMode, startId, endId, effectivePath]);
 
   // Subgraph edges between selected nodes
   const subgraphEdges = useMemo(() => {
@@ -608,10 +705,10 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
   // Filtered displayed plans
   const displayedPlans = useMemo(() => {
     if (displayFilter === 'top6') {
-      return alternativePlans.slice(0, 6);
+      return alternativePlans.slice(0, currentMode === 'subset' ? 10 : 6);
     }
     return alternativePlans;
-  }, [alternativePlans, displayFilter]);
+  }, [alternativePlans, displayFilter, currentMode]);
 
   const destinationLoc = locationMap.get(endId) || (selectedLocations.find(l => l.id !== 'TL') || selectedLocations[0]);
 
@@ -662,10 +759,14 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 isVi 
                   ? 'Phương pháp: Liệt kê toàn bộ các chu trình Hamilton hợp lệ đi qua đầy đủ các địa danh đã chọn, tính tổng quãng đường từng chu trình và sắp xếp tăng dần để tìm ra chu trình ngắn nhất.'
                   : 'Method: Enumerate all valid Hamiltonian cycles, compute each cycle distance, and sort ascending to select the minimum distance cycle.'
-              ) : (
+              ) : currentMode === 'path' ? (
                 isVi 
                   ? `Phương pháp: Liệt kê tất cả các đường đi Hamilton từ THPT Thăng Long đến ${destinationLoc?.label || 'điểm đích'}, sau đó sắp xếp theo tổng quãng đường để chọn đường đi ngắn nhất.`
                   : `Method: Enumerate all valid Hamiltonian paths from origin to destination and sort ascending by total distance.`
+              ) : (
+                isVi
+                  ? `Phương pháp: Áp dụng thuật toán Dijkstra trong tập con ${selectedIds.length} điểm đã chọn để tìm lộ trình ngắn nhất từ THPT Thăng Long đến ${destinationLoc?.label || 'điểm đích'}, đồng thời liệt kê Top ${alternativePlans.length} lộ trình đơn ngắn nhất.`
+                  : `Method: Apply Dijkstra's algorithm within the chosen ${selectedIds.length}-node subset from TL to ${destinationLoc?.label || 'destination'} and list the top ${alternativePlans.length} shortest routes.`
               )}
             </p>
           </div>
@@ -683,7 +784,9 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
             <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 text-center">
               <div className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                {isVi ? 'Chu trình tối ưu (Min)' : 'Optimal Distance'}
+                {currentMode === 'subset'
+                  ? (isVi ? 'Lộ trình tối ưu (Min)' : 'Optimal Route')
+                  : (isVi ? 'Chu trình tối ưu (Min)' : 'Optimal Distance')}
               </div>
               <div className="text-xl sm:text-2xl font-black text-white mt-0.5 flex items-baseline justify-center gap-1">
                 <span>{minDist}</span>
@@ -693,10 +796,12 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
             <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 text-center">
               <div className="text-[10px] font-bold uppercase tracking-wider text-amber-300">
-                {isVi ? 'Tổng chu trình hợp lệ' : 'Valid Cycles'}
+                {currentMode === 'subset'
+                  ? (isVi ? 'Top hành trình ngắn nhất' : 'Top Shortest Routes')
+                  : (isVi ? 'Tổng chu trình hợp lệ' : 'Valid Cycles')}
               </div>
               <div className="text-xl sm:text-2xl font-black text-white mt-0.5">
-                {alternativePlans.length} <span className="text-xs font-semibold text-slate-300">{isVi ? 'phương án' : 'cycles'}</span>
+                {alternativePlans.length} <span className="text-xs font-semibold text-slate-300">{isVi ? 'phương án' : 'routes'}</span>
               </div>
             </div>
 
@@ -795,7 +900,9 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <span>
                 {currentMode === 'cycle'
                   ? (isVi ? 'Mô Hình Chu Trình Hamilton Khép Kín (Graph Topology)' : 'Hamiltonian Cycle Topology')
-                  : (isVi ? 'Mô Hình Đường Đi Hamilton Đơn (Graph Topology)' : 'Hamiltonian Path Topology')}
+                  : currentMode === 'path'
+                  ? (isVi ? 'Mô Hình Đường Đi Hamilton Đơn (Graph Topology)' : 'Hamiltonian Path Topology')
+                  : (isVi ? 'Mô Hình Đồ Thị Đường Đi Ngắn Nhất Dijkstra (Graph Topology)' : 'Dijkstra Shortest-Path Graph Topology')}
               </span>
               {activePlan && (
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-black ${
@@ -808,9 +915,13 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               )}
             </h4>
             <p className="text-xs text-slate-500 mt-0.5">
-              {isVi 
-                ? 'Các đỉnh được nối theo trình tự đường đi với khoảng cách km ở giữa mỗi cạnh.' 
-                : 'Nodes ordered sequentially with midpoint distance weights on each edge.'}
+              {currentMode === 'subset'
+                ? (isVi
+                    ? 'Đỉnh nguồn (trái) ➔ các điểm trung gian trên tuyến tối ưu (nửa trên) ➔ đỉnh đích (phải); các đỉnh chưa đi qua nằm ở nửa dưới.'
+                    : 'Start (left) ➔ active path stops (upper arc) ➔ destination (right); unvisited subset nodes on lower arc.')
+                : (isVi
+                    ? 'Các đỉnh được nối theo trình tự đường đi với khoảng cách km ở giữa mỗi cạnh.'
+                    : 'Nodes ordered sequentially with midpoint distance weights on each edge.')}
             </p>
           </div>
 
@@ -824,8 +935,8 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                   layoutStyle === 'topology' ? 'bg-[#133654] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span>🔄</span>
-                <span>{isVi ? 'Bố cục chu trình' : 'Topology'}</span>
+                <span>{currentMode === 'cycle' ? '🔄' : '🔀'}</span>
+                <span>{currentMode === 'cycle' ? (isVi ? 'Bố cục chu trình' : 'Topology') : (isVi ? 'Bố cục đồ thị' : 'Topology')}</span>
               </button>
               <button
                 type="button"
@@ -864,7 +975,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
             <div className="flex items-center gap-1 bg-[#f7f1e7] p-0.5 rounded-xl border border-[#ded5c7]">
               <button
                 type="button"
-                onClick={() => setScale(s => Math.min(1.8, s + 0.15))}
+                onClick={() => setScale(s => Math.min(2.2, s + 0.15))}
                 className="p-1 hover:bg-white rounded-lg text-slate-700 transition-colors"
                 title="Zoom in"
               >
@@ -891,7 +1002,9 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         </div>
 
         {/* Subgraph SVG Canvas */}
-        <div className="relative w-full h-[460px] bg-gradient-to-b from-[#fefcf8] via-[#fbf7ee] to-[#f4eee1] rounded-2xl border border-[#ded5c7] overflow-hidden flex items-center justify-center select-none shadow-inner">
+        <div className={`relative w-full bg-gradient-to-b from-[#fefcf8] via-[#fbf7ee] to-[#f4eee1] rounded-2xl border border-[#ded5c7] overflow-hidden flex items-center justify-center select-none shadow-inner transition-all ${
+          layoutStyle === 'geographic' ? 'h-[580px] sm:h-[640px]' : 'h-[460px]'
+        }`}>
           <div 
             className="absolute inset-0 opacity-20 pointer-events-none"
             style={{
@@ -902,12 +1015,12 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
           <svg 
             className="w-full h-full transition-transform duration-200" 
-            viewBox="0 0 720 440"
+            viewBox={layoutStyle === 'geographic' ? '0 0 840 600' : '0 0 720 440'}
             style={{ transform: `scale(${scale})` }}
           >
             <defs>
               <clipPath id="subgraph-node-photo-clip">
-                <circle cx="0" cy="0" r="24" />
+                <circle cx="0" cy="0" r={layoutStyle === 'geographic' ? 27 : 24} />
               </clipPath>
               <filter id="subgraph-glow-gold" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -916,7 +1029,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <marker
                 id="arrow-subgraph"
                 viewBox="0 0 10 10"
-                refX="28"
+                refX={layoutStyle === 'geographic' ? '31' : '28'}
                 refY="5"
                 markerWidth="6"
                 markerHeight="6"
@@ -949,31 +1062,31 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                         x2={p2.x}
                         y2={p2.y}
                         stroke="#cbd5e1"
-                        strokeWidth={1.8}
+                        strokeWidth={layoutStyle === 'geographic' ? 2.1 : 1.8}
                         strokeDasharray="4 4"
-                        opacity={0.8}
+                        opacity={0.85}
                         className="group-hover:stroke-amber-500 group-hover:stroke-[2.5px] transition-all"
                       />
                       {showWeights && (
                         <g transform={`translate(${midX}, ${midY})`}>
                           <rect
-                            x={-22}
-                            y={-9}
-                            width={44}
-                            height={18}
-                            rx={9}
+                            x={layoutStyle === 'geographic' ? -25 : -22}
+                            y={layoutStyle === 'geographic' ? -10.5 : -9}
+                            width={layoutStyle === 'geographic' ? 50 : 44}
+                            height={layoutStyle === 'geographic' ? 21 : 18}
+                            rx={10}
                             fill="#ffffff"
                             stroke="#cbd5e1"
-                            strokeWidth={1.2}
+                            strokeWidth={1.3}
                             className="group-hover:fill-amber-50 group-hover:stroke-amber-400 shadow-2xs transition-colors"
                           />
                           <text
                             x={0}
-                            y={3.5}
+                            y={layoutStyle === 'geographic' ? 4 : 3.5}
                             textAnchor="middle"
-                            fontSize={9.5}
+                            fontSize={layoutStyle === 'geographic' ? 11 : 9.5}
                             fontWeight="800"
-                            fill="#64748b"
+                            fill="#475569"
                             className="group-hover:fill-amber-900"
                           >
                             {edge.distanceKm}k
@@ -1027,22 +1140,22 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                         className="cursor-pointer group"
                       >
                         <rect
-                          x={-28}
-                          y={-11}
-                          width={56}
-                          height={22}
-                          rx={11}
+                          x={layoutStyle === 'geographic' ? -32 : -28}
+                          y={layoutStyle === 'geographic' ? -12.5 : -11}
+                          width={layoutStyle === 'geographic' ? 64 : 56}
+                          height={layoutStyle === 'geographic' ? 25 : 22}
+                          rx={12}
                           fill="#133654"
                           stroke="#f59e0b"
-                          strokeWidth={1.5}
+                          strokeWidth={1.6}
                           filter="drop-shadow(0 2px 4px rgba(0,0,0,0.25))"
                           className="group-hover:fill-[#0b2438] transition-colors"
                         />
                         <text
                           x={0}
-                          y={4}
+                          y={layoutStyle === 'geographic' ? 4.5 : 4}
                           textAnchor="middle"
-                          fontSize={11}
+                          fontSize={layoutStyle === 'geographic' ? 12 : 11}
                           fontWeight="900"
                           fill="#fef08a"
                         >
@@ -1057,46 +1170,53 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
             {/* 3. Draw Nodes (Circular Location Photos + Top/Bottom Adaptive Labels) */}
             <g className="nodes">
-              {orderedTourNodeIds.map((id, idx) => {
+              {orderedTourNodeIds.map((id) => {
                 const pos = graphNodePositions[id];
                 const loc = locationMap.get(id);
                 if (!pos || !loc) return null;
 
+                const isGeo = layoutStyle === 'geographic';
                 const isSchool = id === 'TL';
-                const isLast = id === effectivePath[effectivePath.length - 1] && currentMode !== 'cycle';
+                const tourStepIndex = effectivePath.indexOf(id);
+                const isOnPath = tourStepIndex !== -1;
+                const isLast = (id === endId || id === effectivePath[effectivePath.length - 1]) && currentMode !== 'cycle';
                 const photoUrl = loc.imageUrl || loc.images?.[0];
-                const ringColor = isSchool ? '#f59e0b' : isLast ? '#e11d48' : '#059669';
-                const midY = layoutStyle === 'topology' && currentMode === 'cycle' ? 226 : 225;
+                const ringColor = isSchool ? '#f59e0b' : isLast ? '#e11d48' : isOnPath ? '#059669' : '#64748b';
+                const midY = isGeo ? 300 : 226;
                 const isLowerHalf = pos.y > midY;
-                const labelOffsetY = isLowerHalf ? 32 : -52;
-                const schoolBadgeOffsetY = isLowerHalf ? -46 : 30;
-                const badgeOffsetY = isLowerHalf ? -18 : 18;
+                const nodeRadius = isGeo ? 29 : 26;
+                const photoSize = isGeo ? 54 : 48;
+                const labelOffsetY = isLowerHalf ? (isGeo ? 35 : 32) : (isGeo ? -56 : -52);
+                const schoolBadgeOffsetY = isLowerHalf ? (isGeo ? -50 : -46) : (isGeo ? 33 : 30);
+                const badgeOffsetY = isLowerHalf ? (isGeo ? -20 : -18) : (isGeo ? 20 : 18);
+                const stepBadgeText = isSchool ? 'TL' : isLast ? '🏁' : isOnPath ? `${tourStepIndex + 1}` : '•';
 
                 return (
                   <g
                     key={id}
                     transform={`translate(${pos.x}, ${pos.y})`}
+                    opacity={isOnPath || isSchool || isLast ? 1 : 0.78}
                     className="cursor-pointer group"
                     onClick={() => onSelectLocation?.(loc)}
                   >
                     {/* Location Name Pill: above for upper half, below for lower half */}
                     <g transform={`translate(0, ${labelOffsetY})`}>
                       <rect
-                        x={-53}
+                        x={isGeo ? -58 : -53}
                         y={0}
-                        width={106}
-                        height={21}
+                        width={isGeo ? 116 : 106}
+                        height={isGeo ? 23 : 21}
                         rx={7}
                         fill="rgba(19, 54, 84, 0.96)"
                         stroke={ringColor}
-                        strokeWidth={1.1}
+                        strokeWidth={1.2}
                         filter="drop-shadow(0 2px 4px rgba(0,0,0,0.18))"
                       />
                       <text
                         x={0}
-                        y={13.5}
+                        y={isGeo ? 15 : 13.5}
                         textAnchor="middle"
-                        fontSize={10}
+                        fontSize={isGeo ? 11 : 10}
                         fontWeight="800"
                         fill="#ffffff"
                       >
@@ -1106,7 +1226,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
                     {isSchool && (
                       <circle
-                        r={31}
+                        r={nodeRadius + 5}
                         fill="none"
                         stroke="#f59e0b"
                         strokeWidth={2}
@@ -1119,8 +1239,8 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                     {/* Outer ring + fallback colored circle */}
                     <g className="group-hover:scale-110 transition-transform" style={{ transformOrigin: '0 0' }}>
                       <circle
-                        r={26}
-                        fill={isSchool ? '#133654' : isLast ? '#e11d48' : '#059669'}
+                        r={nodeRadius}
+                        fill={ringColor}
                         stroke="#ffffff"
                         strokeWidth={2.5}
                         filter="drop-shadow(0 4px 7px rgba(0,0,0,0.28))"
@@ -1130,20 +1250,20 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                         x={0}
                         y={4}
                         textAnchor="middle"
-                        fontSize={11}
+                        fontSize={isGeo ? 12 : 11}
                         fontWeight="900"
                         fill="#ffffff"
                       >
-                        {isSchool ? 'TL' : isLast ? '🏁' : `#${idx + 1}`}
+                        {stepBadgeText}
                       </text>
 
                       {photoUrl && (
                         <image
                           href={photoUrl}
-                          x={-24}
-                          y={-24}
-                          width={48}
-                          height={48}
+                          x={-photoSize / 2}
+                          y={-photoSize / 2}
+                          width={photoSize}
+                          height={photoSize}
                           preserveAspectRatio="xMidYMid slice"
                           clipPath="url(#subgraph-node-photo-clip)"
                           onError={e => {
@@ -1153,29 +1273,29 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                       )}
 
                       <circle
-                        r={24.5}
+                        r={nodeRadius - 1.5}
                         fill="none"
                         stroke={ringColor}
                         strokeWidth={2.5}
                       />
 
                       {/* Corner sequence badge */}
-                      <g transform={`translate(18, ${badgeOffsetY})`}>
+                      <g transform={`translate(${isGeo ? 20 : 18}, ${badgeOffsetY})`}>
                         <circle
-                          r={9.5}
-                          fill={isSchool ? '#f59e0b' : isLast ? '#e11d48' : '#133654'}
+                          r={isGeo ? 10.5 : 9.5}
+                          fill={isSchool ? '#f59e0b' : isLast ? '#e11d48' : isOnPath ? '#133654' : '#64748b'}
                           stroke="#ffffff"
                           strokeWidth={1.6}
                         />
                         <text
                           x={0}
-                          y={3.2}
+                          y={3.4}
                           textAnchor="middle"
-                          fontSize={8.5}
+                          fontSize={isGeo ? 9.5 : 8.5}
                           fontWeight="900"
                           fill={isSchool ? '#0f172a' : '#ffffff'}
                         >
-                          {isSchool ? 'TL' : isLast ? '🏁' : idx + 1}
+                          {stepBadgeText}
                         </text>
                       </g>
                     </g>
@@ -1247,28 +1367,40 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <h4 className="text-sm sm:text-base font-black text-[#133654]">
                 {currentMode === 'cycle'
                   ? (isVi ? 'Thuật Toán Duyệt & Sắp Xếp Toàn Bộ Chu Trình Hamilton Hợp Lệ' : 'Hamiltonian Cycle Enumeration & Sorting')
-                  : (isVi ? 'Thuật Toán Duyệt & Sắp Xếp Toàn Bộ Đường Đi Hamilton Hợp Lệ' : 'Hamiltonian Path Enumeration & Sorting')}
+                  : currentMode === 'path'
+                  ? (isVi ? 'Thuật Toán Duyệt & Sắp Xếp Toàn Bộ Đường Đi Hamilton Hợp Lệ' : 'Hamiltonian Path Enumeration & Sorting')
+                  : (isVi ? `Top ${alternativePlans.length} Lộ Trình Ngắn Nhất Trong Tập Điểm Chọn (Dijkstra K-Shortest)` : `Top ${alternativePlans.length} Shortest Subset Routes`)}
               </h4>
             </div>
             <span className="text-xs bg-[#133654] text-amber-300 font-black px-3 py-1 rounded-xl">
-              {alternativePlans.length} {isVi ? 'chu trình hợp lệ' : 'valid cycles'}
+              {alternativePlans.length} {currentMode === 'subset' ? (isVi ? 'lộ trình ngắn nhất' : 'shortest routes') : (isVi ? 'chu trình hợp lệ' : 'valid cycles')}
             </span>
           </div>
 
           <p className="text-xs text-slate-700 leading-relaxed">
-            {isVi 
-              ? <span><strong>Cách làm:</strong> Hệ thống tự động liệt kê tất cả <strong>{alternativePlans.length} chu trình Hamilton khả dĩ</strong> đi qua đầy đủ {selectedIds.length} địa danh xuất phát & quay về THPT Thăng Long. Sau đó tính tổng quãng đường (km) của từng chu trình và <strong>sắp xếp tăng dần từ ngắn nhất đến dài nhất</strong> để chọn ra chu trình tối ưu nhất (Hạng #1).</span>
-              : <span><strong>Method:</strong> Enumerated all {alternativePlans.length} valid Hamiltonian cycles, computed total km for each, and sorted ascending to choose the shortest cycle (Rank #1).</span>}
+            {currentMode === 'subset' ? (
+              isVi
+                ? <span><strong>Cách làm:</strong> Hệ thống tìm kiếm và liệt kê <strong>{alternativePlans.length} lộ trình đơn ngắn nhất</strong> từ điểm xuất phát đến đích trong phạm vi {selectedIds.length} địa danh đã chọn, sau đó <strong>sắp xếp tăng dần theo tổng cự ly (km)</strong> với kết quả Dijkstra tối ưu đứng ở Hạng #1.</span>
+                : <span><strong>Method:</strong> Found and ranked the top {alternativePlans.length} shortest simple routes between origin and destination within the {selectedIds.length} selected locations, sorted ascending with Dijkstra optimal path at Rank #1.</span>
+            ) : isVi ? (
+              <span><strong>Cách làm:</strong> Hệ thống tự động liệt kê tất cả <strong>{alternativePlans.length} chu trình Hamilton khả dĩ</strong> đi qua đầy đủ {selectedIds.length} địa danh xuất phát & quay về THPT Thăng Long. Sau đó tính tổng quãng đường (km) của từng chu trình và <strong>sắp xếp tăng dần từ ngắn nhất đến dài nhất</strong> để chọn ra chu trình tối ưu nhất (Hạng #1).</span>
+            ) : (
+              <span><strong>Method:</strong> Enumerated all {alternativePlans.length} valid Hamiltonian cycles, computed total km for each, and sorted ascending to choose the shortest cycle (Rank #1).</span>
+            )}
           </p>
 
           {/* Algorithm stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
             <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200">
-              <span className="text-[10px] text-slate-500 font-bold block">{isVi ? 'Chu trình ngắn nhất:' : 'Min Distance:'}</span>
+              <span className="text-[10px] text-slate-500 font-bold block">
+                {currentMode === 'subset' ? (isVi ? 'Lộ trình ngắn nhất:' : 'Min Distance:') : (isVi ? 'Chu trình ngắn nhất:' : 'Min Distance:')}
+              </span>
               <span className="text-sm font-black text-emerald-700">🏆 {minDist} km</span>
             </div>
             <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200">
-              <span className="text-[10px] text-slate-500 font-bold block">{isVi ? 'Chu trình dài nhất:' : 'Max Distance:'}</span>
+              <span className="text-[10px] text-slate-500 font-bold block">
+                {currentMode === 'subset' ? (isVi ? 'Lộ trình thứ ' + alternativePlans.length + ':' : 'Top Max:') : (isVi ? 'Chu trình dài nhất:' : 'Max Distance:')}
+              </span>
               <span className="text-sm font-black text-rose-700">🐢 {maxDist} km</span>
             </div>
             <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200">
@@ -1276,13 +1408,17 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <span className="text-sm font-black text-amber-800">+{(maxDist - minDist).toFixed(1)} km</span>
             </div>
             <div className="bg-white/80 p-2.5 rounded-xl border border-amber-200">
-              <span className="text-[10px] text-slate-500 font-bold block">{isVi ? 'Số hoán vị chu trình:' : 'Cycle Permutations:'}</span>
-              <span className="text-sm font-black text-[#133654]">({selectedIds.length} - 1)! / 2</span>
+              <span className="text-[10px] text-slate-500 font-bold block">
+                {currentMode === 'subset' ? (isVi ? 'Số lượng phương án:' : 'Total Plans:') : (isVi ? 'Số hoán vị chu trình:' : 'Cycle Permutations:')}
+              </span>
+              <span className="text-sm font-black text-[#133654]">
+                {currentMode === 'subset' ? `Top ${alternativePlans.length}` : `(${selectedIds.length} - 1)! / 2`}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* View mode filter tabs: Top 6 vs All + Mini-map Layout Toggle */}
+        {/* View mode filter tabs: Top 6 / Top 10 vs All + Mini-map Layout Toggle */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1.5 p-1 bg-[#f7f1e7] rounded-2xl border border-[#ded5c7] text-xs font-bold">
@@ -1296,7 +1432,11 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 }`}
               >
                 <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                <span>{isVi ? `Top 6 chu trình ngắn nhất` : `Top 6 Shortest`}</span>
+                <span>
+                  {currentMode === 'subset'
+                    ? (isVi ? `Top ${Math.min(10, alternativePlans.length)} ngắn nhất` : `Top ${Math.min(10, alternativePlans.length)} Shortest`)
+                    : (isVi ? 'Top 6 chu trình ngắn nhất' : 'Top 6 Shortest')}
+                </span>
               </button>
 
               <button
@@ -1309,7 +1449,11 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 }`}
               >
                 <ListOrdered className="w-3.5 h-3.5" />
-                <span>{isVi ? `Xem toàn bộ ${alternativePlans.length} chu trình` : `All ${alternativePlans.length} Cycles`}</span>
+                <span>
+                  {currentMode === 'subset'
+                    ? (isVi ? `Xem đủ ${alternativePlans.length} phương án` : `All ${alternativePlans.length} Routes`)
+                    : (isVi ? `Xem toàn bộ ${alternativePlans.length} chu trình` : `All ${alternativePlans.length} Cycles`)}
+                </span>
               </button>
             </div>
 
@@ -1398,8 +1542,10 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                     }`}>
                       {isOptimal ? <Trophy className="w-3 h-3 text-amber-300" /> : <Award className="w-3 h-3" />}
                       <span>
-                        {isOptimal 
-                          ? (isVi ? 'HẠNG #1: TỐI ƯU NHẤT' : 'RANK #1: OPTIMAL') 
+                        {isOptimal
+                          ? (isVi ? 'HẠNG #1: TỐI ƯU NHẤT' : 'RANK #1: OPTIMAL')
+                          : currentMode === 'subset'
+                          ? (isVi ? `HẠNG #${rank}: LỘ TRÌNH PHỤ` : `RANK #${rank}`)
                           : (isVi ? `HẠNG #${rank}: CHU TRÌNH PHỤ` : `RANK #${rank}`)}
                       </span>
                     </span>
@@ -1420,7 +1566,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 }`}>
                   <div>
                     <div className="text-[10px] text-slate-500 font-bold uppercase">
-                      {isVi ? 'Tổng cự ly chu trình' : 'Total Distance'}
+                      {currentMode === 'subset' ? (isVi ? 'Tổng cự ly tuyến' : 'Total Distance') : (isVi ? 'Tổng cự ly chu trình' : 'Total Distance')}
                     </div>
                     <div className={`text-base font-black ${isOptimal ? 'text-emerald-800' : 'text-[#133654]'}`}>
                       {plan.totalDistanceKm} <span className="text-[10px] font-semibold text-slate-400">km</span>
@@ -1448,7 +1594,11 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                   <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 px-1">
                     <span className="flex items-center gap-1">
                       <MapIcon className="w-3 h-3 text-slate-400" />
-                      <span>{isVi ? `Mini-map chu trình #${rank}:` : `Cycle Mini-Map #${rank}:`}</span>
+                      <span>
+                        {currentMode === 'cycle'
+                          ? (isVi ? `Mini-map chu trình #${rank}:` : `Cycle Mini-Map #${rank}:`)
+                          : (isVi ? `Mini-map lộ trình #${rank}:` : `Route Mini-Map #${rank}:`)}
+                      </span>
                     </span>
                     <span>~{times.motoMinutes} {isVi ? 'phút xe máy' : 'mins'}</span>
                   </div>
@@ -1507,7 +1657,11 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                   ) : (
                     <>
                       <Eye className="w-3.5 h-3.5" />
-                      <span>{isVi ? `Xem chu trình #${rank} trên đồ thị` : `Preview Cycle #${rank}`}</span>
+                      <span>
+                        {currentMode === 'cycle'
+                          ? (isVi ? `Xem chu trình #${rank} trên đồ thị` : `Preview Cycle #${rank}`)
+                          : (isVi ? `Xem lộ trình #${rank} trên đồ thị` : `Preview Route #${rank}`)}
+                      </span>
                     </>
                   )}
                 </button>
@@ -1544,7 +1698,11 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
             }`}
           >
             <GitBranch className="w-3.5 h-3.5" />
-            <span>{isVi ? `2. Bảng xếp hạng tất cả ${alternativePlans.length} chu trình` : `2. All ${alternativePlans.length} Cycles`}</span>
+            <span>
+              {currentMode === 'cycle'
+                ? (isVi ? `2. Bảng xếp hạng tất cả ${alternativePlans.length} chu trình` : `2. All ${alternativePlans.length} Cycles`)
+                : (isVi ? `2. Bảng xếp hạng ${alternativePlans.length} lộ trình` : `2. Top ${alternativePlans.length} Routes`)}
+            </span>
           </button>
 
           <button
@@ -1625,7 +1783,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 <thead>
                   <tr className="bg-[#f7f1e7] text-[#133654]">
                     <th className="p-3 font-black text-center w-16">{isVi ? 'Thứ hạng' : 'Rank'}</th>
-                    <th className="p-3 font-black">{isVi ? 'Tên chu trình' : 'Cycle'}</th>
+                    <th className="p-3 font-black">{currentMode === 'cycle' ? (isVi ? 'Tên chu trình' : 'Cycle') : (isVi ? 'Tên lộ trình' : 'Route')}</th>
                     <th className="p-3 font-black">{isVi ? 'Tổng quãng đường' : 'Distance'}</th>
                     <th className="p-3 font-black">{isVi ? 'Độ lệch so với tối ưu' : 'Delta'}</th>
                     <th className="p-3 font-black">{isVi ? 'Thời gian xe máy' : 'Travel Time'}</th>
@@ -1728,7 +1886,9 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <span>
                 {currentMode === 'cycle'
                   ? (isVi ? 'Lý Thuyết & Thuật Toán Tìm Chu Trình Hamilton Ngắn Nhất' : 'Hamiltonian Cycle Algorithm Theory')
-                  : (isVi ? 'Lý Thuyết & Thuật Toán Tìm Đường Đi Hamilton Ngắn Nhất' : 'Hamiltonian Path Algorithm Theory')}
+                  : currentMode === 'path'
+                  ? (isVi ? 'Lý Thuyết & Thuật Toán Tìm Đường Đi Hamilton Ngắn Nhất' : 'Hamiltonian Path Algorithm Theory')
+                  : (isVi ? 'Lý Thuyết & Thuật Toán Dijkstra Tìm Đường Đi Ngắn Nhất' : 'Dijkstra Shortest Path Algorithm Theory')}
               </span>
             </div>
 
@@ -1737,10 +1897,14 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 isVi 
                   ? 'Trong lý thuyết đồ thị, chu trình Hamilton là một chu trình kín trong đồ thị vô hướng G = (V, E) đi qua mỗi đỉnh trong tập V đúng 1 lần và quay trở lại đỉnh xuất phát. Để tìm chu trình ngắn nhất cho nhóm tham quan từ THPT Thăng Long, giải thuật duyệt toàn bộ sinh ra tất cả các hoán vị chu trình, tính tổng độ dài từng chu trình rồi sắp xếp tăng dần để chọn ra chu trình có tổng độ dài nhỏ nhất.'
                   : 'A Hamiltonian cycle visits every vertex in G exactly once and returns to the start vertex. The brute force enumeration generates all permutations, computes their total weights, and sorts them ascending to select the minimum cycle.'
-              ) : (
+              ) : currentMode === 'path' ? (
                 isVi 
                   ? `Đường đi Hamilton là một đường đi sơ cấp trong đồ thị G = (V, E) đi qua tất cả các đỉnh trong tập V đúng một lần từ THPT Thăng Long đến ${destinationLoc?.label}. Hệ thống duyệt tất cả các hoán vị đường đi và sắp xếp theo quãng đường để chọn phương án tối ưu.`
                   : `A Hamiltonian path is a simple path visiting every vertex in V exactly once. The system enumerates all valid paths and sorts them by distance.`
+              ) : (
+                isVi
+                  ? `Trong tập điểm con đã chọn gồm ${selectedIds.length} đỉnh, thuật toán Dijkstra tìm đường đi ngắn nhất từ đỉnh nguồn THPT Thăng Long đến đỉnh đích ${destinationLoc?.label} bằng cách gán nhãn khoảng cách tăng dần (không bắt buộc phải đi qua toàn bộ các đỉnh còn lại). Đồng thời hệ thống mở rộng liệt kê Top ${alternativePlans.length} lộ trình đơn ngắn nhất để bạn đối chiếu.`
+                  : `Inside the chosen ${selectedIds.length}-node subset, Dijkstra's algorithm computes the shortest route from TL to ${destinationLoc?.label} without requiring every intermediate node to be visited, alongside the top ${alternativePlans.length} shortest simple alternatives.`
               )}
             </p>
 
@@ -1748,19 +1912,34 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               <div className="p-3 bg-white rounded-xl border border-[#ded5c7] space-y-1">
                 <div className="font-black text-[#133654]">1. Quy trình 4 bước giải toán</div>
                 <div className="text-[11px] text-slate-600 leading-relaxed">
-                  Bước 1: Liệt kê toàn bộ các chu trình hợp lệ.<br />
-                  Bước 2: Tính tổng quãng đường km từng chu trình.<br />
-                  Bước 3: Sắp xếp các chu trình theo quãng đường tăng dần.<br />
-                  Bước 4: Chọn chu trình đầu bảng (Hạng #1) làm lời giải ngắn nhất.
+                  {currentMode === 'subset' ? (
+                    <>
+                      Bước 1: Khoanh vùng đồ thị con G' trên {selectedIds.length} đỉnh.<br />
+                      Bước 2: Gán nhãn d(TL) = 0, các đỉnh khác d = ∞.<br />
+                      Bước 3: Lặp chọn đỉnh có nhãn nhỏ nhất &amp; cập nhật cạnh kề.<br />
+                      Bước 4: Truy vết đường đi ngắn nhất &amp; xếp hạng Top {alternativePlans.length}.
+                    </>
+                  ) : (
+                    <>
+                      Bước 1: Liệt kê toàn bộ các phương án hợp lệ.<br />
+                      Bước 2: Tính tổng quãng đường km từng phương án.<br />
+                      Bước 3: Sắp xếp theo quãng đường tăng dần.<br />
+                      Bước 4: Chọn phương án đầu bảng (Hạng #1) làm lời giải ngắn nhất.
+                    </>
+                  )}
                 </div>
               </div>
 
               <div className="p-3 bg-white rounded-xl border border-[#ded5c7] space-y-1">
-                <div className="font-black text-[#133654]">2. Không gian tìm kiếm hoán vị</div>
+                <div className="font-black text-[#133654]">
+                  {currentMode === 'subset' ? '2. Tính chất tối ưu Dijkstra' : '2. Không gian tìm kiếm hoán vị'}
+                </div>
                 <div className="text-[11px] text-slate-600 leading-relaxed">
                   {currentMode === 'cycle'
                     ? `Với ${selectedIds.length} đỉnh, số chu trình hình học độc lập là (${selectedIds.length} - 1)! / 2. Toàn bộ các chu trình này đã được tính toán và xếp hạng đầy đủ ở trên.`
-                    : `Với ${selectedIds.length} đỉnh cố định 2 đầu mút, số đường đi khả dĩ là (${selectedIds.length} - 2)! hoán vị.`}
+                    : currentMode === 'path'
+                    ? `Với ${selectedIds.length} đỉnh cố định 2 đầu mút, số đường đi khả dĩ là (${selectedIds.length} - 2)! hoán vị.`
+                    : `Khác với đường đi Hamilton, bài toán Dijkstra không bắt buộc đi hết cả ${selectedIds.length} đỉnh nên có thể chọn đường tắt hoặc đường vòng ngắn hơn (chỉ qua 2–4 đỉnh) từ nguồn tới đích.`}
                 </div>
               </div>
             </div>
@@ -1829,7 +2008,13 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         <div>
           <div className="text-xs sm:text-sm font-black text-amber-950 flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>{isVi ? 'Đã hoàn thành rà soát & xếp hạng chu trình' : 'Cycles Enumeration & Ranking Complete'}</span>
+            <span>
+              {currentMode === 'cycle'
+                ? (isVi ? 'Đã hoàn thành rà soát & xếp hạng chu trình' : 'Cycles Enumeration & Ranking Complete')
+                : currentMode === 'path'
+                ? (isVi ? 'Đã hoàn thành rà soát & xếp hạng đường đi' : 'Paths Enumeration & Ranking Complete')
+                : (isVi ? `Đã hoàn thành tìm kiếm & xếp hạng Top ${alternativePlans.length} lộ trình Dijkstra` : 'Dijkstra Top Routes Ranking Complete')}
+            </span>
           </div>
           <div className="text-[11px] text-amber-900 mt-0.5">
             {isVi 

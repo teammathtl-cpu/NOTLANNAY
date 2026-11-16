@@ -209,6 +209,13 @@ export const GuideShell: React.FC<GuideShellProps> = ({
     }
   }, [isCustomMode, currentMode, selectedIds, endId, startId, isVi, requiredPresetCount]);
 
+  // Reset activePlanId to optimal when switching problem mode or selection
+  useEffect(() => {
+    setActivePlanId('optimal');
+    setDijkstraCurrentStep(0);
+    setIsPlayingDijkstra(false);
+  }, [currentMode, startId, endId]);
+
   // Alternative Plans & Results
   const alternativePlans = useMemo(() => {
     if (!isSelectionReady) return [];

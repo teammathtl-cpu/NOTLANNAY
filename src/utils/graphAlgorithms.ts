@@ -567,6 +567,138 @@ export function enumerateSortedHamiltonianPaths(
 }
 
 /**
+ * Enumerate the top-K shortest simple paths within a subset of chosen nodes (Bài 3)
+ * ordered ascending by total distance, with Dijkstra's shortest path as Rank #1.
+ */
+export function enumerateSortedSubsetPaths(
+  selectedNodes: string[],
+  startId: string,
+  endId: string,
+  routes: Route[],
+  maxResults: number = 10
+): AlternativePlan[] {
+  const subsetSet = new Set(selectedNodes);
+  subsetSet.add(startId);
+  subsetSet.add(endId);
+
+  if (startId === endId) {
+    return [{
+      id: 'optimal',
+      title: 'Hành trình #1 (Ngắn nhất - Tối ưu)',
+      titleEn: 'Route #1 (Shortest - Optimal)',
+      description: 'Điểm xuất phát và điểm đích trùng nhau (0 km).',
+      descriptionEn: 'Start and destination are identical (0 km).',
+      path: [startId],
+      totalDistanceKm: 0,
+      rank: 1,
+      diffKm: 0,
+      diffPercent: 0,
+      isOptimal: true,
+    }];
+  }
+
+  const adj = buildAdjacencyList(routes);
+  const directRes = runDijkstraWithSteps(startId, endId, Array.from(subsetSet), routes, []);
+
+  interface QueueItem {
+    path: string[];
+    dist: number;
+    visited: Set<string>;
+  }
+
+  const queue: QueueItem[] = [{
+    path: [startId],
+    dist: 0,
+    visited: new Set([startId]),
+  }];
+
+  const foundPaths: Array<{ path: string[]; distance: number }> = [];
+  const seenKeys = new Set<string>();
+  let iterations = 0;
+  const maxIterations = 8000;
+
+  while (queue.length > 0 && foundPaths.length < maxResults && iterations < maxIterations) {
+    iterations++;
+    queue.sort((a, b) => a.dist - b.dist || a.path.length - b.path.length);
+    const current = queue.shift()!;
+    const lastNode = current.path[current.path.length - 1];
+
+    if (lastNode === endId) {
+      const roundedDist = Math.round(current.dist * 10) / 10;
+      const key = current.path.join('->');
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
+        foundPaths.push({ path: current.path, distance: roundedDist });
+      }
+      continue;
+    }
+
+    const neighbors = (adj.get(lastNode) || []).filter(item => subsetSet.has(item.nodeId));
+    for (const { nodeId, weight } of neighbors) {
+      if (!current.visited.has(nodeId)) {
+        const nextVisited = new Set(current.visited);
+        nextVisited.add(nodeId);
+        queue.push({
+          path: [...current.path, nodeId],
+          dist: Math.round((current.dist + weight) * 10) / 10,
+          visited: nextVisited,
+        });
+      }
+    }
+
+    if (queue.length > 3000) {
+      queue.sort((a, b) => a.dist - b.dist || a.path.length - b.path.length);
+      queue.length = 2000;
+    }
+  }
+
+  if (foundPaths.length === 0) {
+    foundPaths.push({ path: directRes.path, distance: directRes.totalDistanceKm });
+  }
+
+  const optimalKey = directRes.path.join('->');
+  foundPaths.sort((a, b) => {
+    if (a.distance !== b.distance) return a.distance - b.distance;
+    const aIsOpt = a.path.join('->') === optimalKey ? 0 : 1;
+    const bIsOpt = b.path.join('->') === optimalKey ? 0 : 1;
+    if (aIsOpt !== bIsOpt) return aIsOpt - bIsOpt;
+    return a.path.length - b.path.length;
+  });
+
+  const topPaths = foundPaths.slice(0, maxResults);
+  const minDist = topPaths[0]?.distance || 0;
+
+  return topPaths.map((p, idx) => {
+    const rank = idx + 1;
+    const isOpt = rank === 1;
+    const diff = Number((p.distance - minDist).toFixed(1));
+    const diffPct = minDist > 0 ? Math.round((diff / minDist) * 100) : 0;
+
+    return {
+      id: isOpt ? 'optimal' : `subset-${rank}`,
+      title: isOpt
+        ? 'Hành trình #1 (Ngắn nhất - Tối ưu)'
+        : `Hành trình #${rank} (Khả dĩ)`,
+      titleEn: isOpt
+        ? 'Route #1 (Shortest - Optimal)'
+        : `Route #${rank} (Alternative)`,
+      description: isOpt
+        ? `Tuyến đường ngắn nhất (${p.distance} km) từ điểm xuất phát đến đích theo thuật toán Dijkstra, dẫn đầu Top ${topPaths.length} lộ trình ngắn nhất.`
+        : `Lộ trình khả dĩ thứ ${rank} trong tập điểm đã chọn với tổng cự ly ${p.distance} km (dài hơn tuyến tối ưu ${diff} km, chênh lệch +${diffPct}%).`,
+      descriptionEn: isOpt
+        ? `Shortest route (${p.distance} km) from start to finish using Dijkstra, ranked #1 of top ${topPaths.length} routes.`
+        : `Alternative route #${rank} in chosen subset with total distance of ${p.distance} km (+${diff} km longer).`,
+      path: p.path,
+      totalDistanceKm: p.distance,
+      rank,
+      diffKm: diff,
+      diffPercent: diffPct,
+      isOptimal: isOpt,
+    };
+  });
+}
+
+/**
  * Generate Alternative Plans for comparison
  */
 export function generateAlternativePlans(
@@ -581,21 +713,7 @@ export function generateAlternativePlans(
   } else if (mode === 'path') {
     return enumerateSortedHamiltonianPaths(selectedNodes, startId, endId, routes);
   } else {
-    // Subset mode (Dijkstra)
-    const directRes = runDijkstraWithSteps(startId, endId, selectedNodes, routes, []);
-    return [{
-      id: 'optimal',
-      title: 'Đường đi ngắn nhất Dijkstra',
-      titleEn: 'Shortest Path (Dijkstra)',
-      description: 'Lời giải đường đi ngắn nhất giữa hai điểm trong tập con đã chọn.',
-      descriptionEn: 'Shortest path inside chosen subset.',
-      path: directRes.path,
-      totalDistanceKm: directRes.totalDistanceKm,
-      rank: 1,
-      diffKm: 0,
-      diffPercent: 0,
-      isOptimal: true,
-    }];
+    return enumerateSortedSubsetPaths(selectedNodes, startId, endId, routes, 10);
   }
 }
 
