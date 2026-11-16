@@ -591,64 +591,95 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
         });
       }
     } else {
+      // Geographic mode: project from real GPS (lng, lat) blended slightly with rank spread
+      // so narrow corridors or distant outliers never squish central landmarks, then relax evenly
+      const cosLat = Math.cos((21.03 * Math.PI) / 180);
+      const raw = selectedLocations.map(l => ({
+        id: l.id,
+        rx: (l.lng ?? l.x) * cosLat,
+        ry: -(l.lat ?? -l.y),
+      }));
+
       let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      selectedLocations.forEach(loc => {
-        if (loc.x < minX) minX = loc.x;
-        if (loc.x > maxX) maxX = loc.x;
-        if (loc.y < minY) minY = loc.y;
-        if (loc.y > maxY) maxY = loc.y;
+      raw.forEach(p => {
+        if (p.rx < minX) minX = p.rx;
+        if (p.rx > maxX) maxX = p.rx;
+        if (p.ry < minY) minY = p.ry;
+        if (p.ry > maxY) maxY = p.ry;
       });
 
-      const spanRawX = maxX - minX || 100;
-      const spanRawY = maxY - minY || 100;
-      const padX = spanRawX * 0.05;
-      const padY = spanRawY * 0.05;
-      const spanX = (spanRawX + padX * 2) || 1;
-      const spanY = (spanRawY + padY * 2) || 1;
+      const spanX = maxX - minX || 0.001;
+      const spanY = maxY - minY || 0.001;
 
-      const geoMinX = 96;
-      const geoMaxX = 864;
-      const geoMinY = 88;
-      const geoMaxY = 592;
+      const sortedX = [...raw].sort((a, b) => a.rx - b.rx);
+      const sortedY = [...raw].sort((a, b) => a.ry - b.ry);
+      const rankX = new Map(sortedX.map((p, i) => [p.id, sortedX.length > 1 ? i / (sortedX.length - 1) : 0.5]));
+      const rankY = new Map(sortedY.map((p, i) => [p.id, sortedY.length > 1 ? i / (sortedY.length - 1) : 0.5]));
 
-      selectedLocations.forEach(loc => {
-        const nx = (loc.x - (minX - padX)) / spanX;
-        const ny = (loc.y - (minY - padY)) / spanY;
-        positions[loc.id] = {
-          x: geoMinX + nx * (geoMaxX - geoMinX),
-          y: geoMinY + ny * (geoMaxY - geoMinY),
-        };
+      const geoMinX = 115;
+      const geoMaxX = 845;
+      const geoMinY = 95;
+      const geoMaxY = 585;
+      const availW = geoMaxX - geoMinX;
+      const availH = geoMaxY - geoMinY;
+
+      const anchors: Record<string, { x: number; y: number; ax: number; ay: number }> = {};
+      raw.forEach(p => {
+        const linX = (p.rx - minX) / spanX;
+        const linY = (p.ry - minY) / spanY;
+        const uX = linX * 0.72 + (rankX.get(p.id) ?? linX) * 0.28;
+        const uY = linY * 0.76 + (rankY.get(p.id) ?? linY) * 0.24;
+        const x = geoMinX + uX * availW;
+        const y = geoMinY + uY * availH;
+        anchors[p.id] = { x, y, ax: x, ay: y };
       });
 
-      // Gentle repulsion pass so dense central landmarks have plenty of room for photos, labels & weights
-      const ids = selectedLocations.map(l => l.id);
-      const minSep = 165;
-      for (let iter = 0; iter < 45; iter++) {
+      const ids = raw.map(r => r.id);
+      const minSep = ids.length <= 6 ? 215 : ids.length <= 10 ? 170 : 140;
+      for (let iter = 0; iter < 80; iter++) {
         for (let i = 0; i < ids.length; i++) {
           for (let j = i + 1; j < ids.length; j++) {
-            const p1 = positions[ids[i]];
-            const p2 = positions[ids[j]];
+            const p1 = anchors[ids[i]];
+            const p2 = anchors[ids[j]];
             if (!p1 || !p2) continue;
             const dx = p2.x - p1.x;
             const dy = p2.y - p1.y;
             const dist = Math.hypot(dx, dy) || 0.01;
             if (dist < minSep) {
-              const push = (minSep - dist) * 0.35;
+              const push = (minSep - dist) * 0.28;
               const ux = dx / dist;
               const uy = dy / dist;
-              p1.x = Math.max(geoMinX, Math.min(geoMaxX, p1.x - ux * push));
-              p1.y = Math.max(geoMinY, Math.min(geoMaxY, p1.y - uy * push));
-              p2.x = Math.max(geoMinX, Math.min(geoMaxX, p2.x + ux * push));
-              p2.y = Math.max(geoMinY, Math.min(geoMaxY, p2.y + uy * push));
+              p1.x -= ux * push;
+              p1.y -= uy * push;
+              p2.x += ux * push;
+              p2.y += uy * push;
             }
           }
         }
+        for (const id of ids) {
+          const p = anchors[id];
+          p.x += (p.ax - p.x) * 0.07;
+          p.y += (p.ay - p.y) * 0.07;
+          p.x = Math.max(geoMinX, Math.min(geoMaxX, p.x));
+          p.y = Math.max(geoMinY, Math.min(geoMaxY, p.y));
+        }
       }
+
+      // Re-center the relaxed bounding box smoothly in the canvas
+      let bMinX = Infinity, bMaxX = -Infinity, bMinY = Infinity, bMaxY = -Infinity;
+      ids.forEach(id => {
+        bMinX = Math.min(bMinX, anchors[id].x);
+        bMaxX = Math.max(bMaxX, anchors[id].x);
+        bMinY = Math.min(bMinY, anchors[id].y);
+        bMaxY = Math.max(bMaxY, anchors[id].y);
+      });
+      const shiftX = (geoMinX + geoMaxX) / 2 - (bMinX + bMaxX) / 2;
+      const shiftY = (geoMinY + geoMaxY) / 2 - (bMinY + bMaxY) / 2;
 
       ids.forEach(id => {
         positions[id] = {
-          x: Math.round(positions[id].x),
-          y: Math.round(positions[id].y),
+          x: Math.round(Math.max(geoMinX, Math.min(geoMaxX, anchors[id].x + shiftX))),
+          y: Math.round(Math.max(geoMinY, Math.min(geoMaxY, anchors[id].y + shiftY))),
         };
       });
     }
@@ -889,18 +920,20 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
       let ctrl: { x: number; y: number } | null = null;
 
-      if (!directSE) {
+      if (!directSE || isGeo) {
         const passesNearCenter = !isGeo && Math.hypot(midX - cx, midY - cy) < 115;
+        const nodeClearance = isGeo ? 48 : 38;
         const hitsOtherNode = orderedTourNodeIds.some(nid => {
           if (nid === edge.from || nid === edge.to) return false;
           const np = graphNodePositions[nid];
-          return np ? distPointToSegment(np.x, np.y, p1.x, p1.y, p2.x, p2.y) < 38 : false;
+          return np ? distPointToSegment(np.x, np.y, p1.x, p1.y, p2.x, p2.y) < nodeClearance : false;
         });
 
         if (passesNearCenter || hitsOtherNode) {
+          const bow = isGeo ? 95 : 125;
           // Pick bow side away from center (or alternating for center-crossing chords)
-          const candPos = { x: midX + nx * 125, y: midY + ny * 125 };
-          const candNeg = { x: midX - nx * 125, y: midY - ny * 125 };
+          const candPos = { x: midX + nx * bow, y: midY + ny * bow };
+          const candNeg = { x: midX - nx * bow, y: midY - ny * bow };
           const dPos = Math.hypot(candPos.x - cx, candPos.y - cy);
           const dNeg = Math.hypot(candNeg.x - cx, candNeg.y - cy);
           if (Math.abs(dPos - dNeg) > 12) {
@@ -1294,6 +1327,27 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b" />
               </marker>
             </defs>
+
+            {/* Subtle Cartographic Coordinate Grid & Compass Rose in Geographic Mode */}
+            {layoutStyle === 'geographic' && (
+              <g className="pointer-events-none" opacity={0.55}>
+                {[170, 340, 510].map(y => (
+                  <line key={`hy-${y}`} x1={28} y1={y} x2={932} y2={y} stroke="#d7ccbb" strokeWidth={0.9} strokeDasharray="4 6" />
+                ))}
+                {[240, 480, 720].map(x => (
+                  <line key={`vx-${x}`} x1={x} y1={24} x2={x} y2={656} stroke="#d7ccbb" strokeWidth={0.9} strokeDasharray="4 6" />
+                ))}
+                <g transform="translate(908, 48)">
+                  <circle r={22} fill="rgba(255,255,255,0.85)" stroke="#cbbba4" strokeWidth={1.2} />
+                  <path d="M 0 -13 L 4 0 L 0 -3 L -4 0 Z" fill="#dc2626" />
+                  <path d="M 0 13 L 4 0 L 0 3 L -4 0 Z" fill="#64748b" />
+                  <text x={0} y={-14.5} textAnchor="middle" fontSize={8} fontWeight="900" fill="#133654">B</text>
+                  <text x={0} y={20.5} textAnchor="middle" fontSize={7.5} fontWeight="800" fill="#64748b">N</text>
+                  <text x={-15.5} y={3} textAnchor="middle" fontSize={7.5} fontWeight="800" fill="#64748b">T</text>
+                  <text x={15.5} y={3} textAnchor="middle" fontSize={7.5} fontWeight="800" fill="#64748b">Đ</text>
+                </g>
+              </g>
+            )}
 
             {/* 1. Draw non-tour background edges with Non-Overlapping Distance Badges & Hover Highlight */}
             {showOtherEdges && (

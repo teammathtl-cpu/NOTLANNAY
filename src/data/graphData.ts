@@ -795,6 +795,80 @@ export const INITIAL_LOCATIONS: TouristLocation[] = [
     lat: 21.0287,
     lng: 105.8490,
     displayOrder: 20
+  },
+  {
+    id: "BHD",
+    label: "Bốt Hàng Đậu",
+    fullName: "Tháp nước Hàng Đậu (Bốt Hàng Đậu)",
+    category: "Di tích lịch sử",
+    description: "Xây dựng vào năm 1894 bên ngã sáu Phan Đình Phùng – Hàng Đậu – Quán Thánh – Hàng Cót – Hàng Than – Hàng Giấy, Tháp nước Hàng Đậu (thường gọi là Bốt Hàng Đậu) là một trong những công trình kiến trúc công nghiệp cổ nhất của Hà Nội còn nguyên vẹn đến ngày nay. Với dáng trụ tròn ba tầng kiên cố bằng đá hộc và gạch, mái chóp nón cùng những ô cửa vòm hẹp đặc trưng, công trình từng giữ vai trò cấp nước sạch cho khu phố cổ và khu thành cổ đầu thế kỷ XX. Ngày nay, Bốt Hàng Đậu là điểm check-in di sản nổi tiếng và không gian trưng bày nghệ thuật đương đại giữa lòng Ba Đình.",
+    shortIntro: "Di tích tháp nước cổ xây dựng năm 1894 với kiến trúc tháp tròn bằng đá độc đáo tại ngã sáu Phan Đình Phùng – Hàng Đậu.",
+    imageUrl: "/assets/aistudio/image_455a9921.png",
+    neighborhood: "Ngã sáu Hàng Đậu – Phan Đình Phùng, Phường Quán Thánh, Quận Ba Đình, Hà Nội, Việt Nam",
+    bestFor: "Tham quan di tích lịch sử, Kiến trúc cổ Hà Nội, Chụp ảnh check-in, Dạo phố Phan Đình Phùng",
+    highlights: [
+      "Công trình tháp nước cổ xây dựng năm 1894 – dấu ấn hạ tầng đô thị đầu tiên của Hà Nội",
+      "Kiến trúc hình trụ tròn ba tầng bằng đá hộc và gạch, các ô cửa vòm cổ kính",
+      "Nằm tại giao lộ sáu ngả kết nối phố Phan Đình Phùng rợp bóng sấu và khu Phố cổ",
+      "Không gian triển lãm nghệ thuật sắp đặt và điểm chụp ảnh di sản thu hút du khách"
+    ],
+    x: 555,
+    y: 255,
+    fullNameEn: "Hang Dau Water Tower (Bot Hang Dau)",
+    descriptionEn: "Built in 1894 at the six-way intersection of Phan Dinh Phung, Hang Dau, Quan Thanh, Hang Cot, Hang Than, and Hang Giay streets, the Hang Dau Water Tower (locally known as Bot Hang Dau) is one of Hanoi's oldest surviving industrial heritage structures. Featuring a sturdy three-story cylindrical stone-and-brick facade, a conical roof, and narrow arched windows, it originally supplied clean water to the Old Quarter and Citadel area in the early 20th century. Today, it stands as an iconic historical landmark and occasional contemporary art installation venue in Ba Dinh District.",
+    shortIntroEn: "A historic 1894 cylindrical stone water tower standing at the iconic Phan Dinh Phung – Hang Dau six-way intersection.",
+    neighborhoodEn: "Hang Dau – Phan Dinh Phung Intersection, Quan Thanh Ward, Ba Dinh District, Hanoi, Vietnam",
+    bestForEn: "Historic landmarks, Heritage architecture, Street photography, Phan Dinh Phung walks",
+    highlightsEn: [
+      "Historic water tower built in 1894 as part of Hanoi's early modern waterworks",
+      "Distinctive cylindrical stone masonry, narrow arched windows, and conical roof",
+      "Prime heritage landmark linking tree-lined Phan Dinh Phung Boulevard and the Old Quarter",
+      "Popular cultural photography spot and immersive heritage art venue"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Hang+Dau+Water+Tower+Hanoi+Vietnam",
+    images: [
+      "/assets/aistudio/image_455a9921.png"
+    ],
+    lat: 21.04025,
+    lng: 105.84735,
+    displayOrder: 21
+  },
+  {
+    id: "HOALO",
+    label: "Nhà tù Hỏa Lò",
+    fullName: "Di tích Nhà tù Hỏa Lò (Maison Centrale)",
+    category: "Di tích lịch sử",
+    description: "Xây dựng năm 1896 tại số 1 phố Hỏa Lò, quận Hoàn Kiếm trên nền làng gốm Phụ Khánh xưa, Di tích Nhà tù Hỏa Lò (Maison Centrale) là minh chứng lịch sử đặc biệt gắn liền với tinh thần đấu tranh kiên cường của các chiến sĩ yêu nước và cách mạng Việt Nam qua hai cuộc kháng chiến. Công trình giữ nguyên phần cổng vòm đen chữ trắng, những bức tường đá dày cổ kính, các phòng giam tái hiện chân thực cùng khu tưởng niệm trang nghiêm và chương trình tham quan trải nghiệm đêm đặc sắc giữa lòng Thủ đô.",
+    shortIntro: "Di tích lịch sử đặc biệt tại số 1 phố Hỏa Lò, lưu giữ ký ức hào hùng về tinh thần bất khuất của các chiến sĩ cách mạng Việt Nam.",
+    imageUrl: "/assets/aistudio/image_7af91234.png",
+    neighborhood: "Số 1 Phố Hỏa Lò, Phường Trần Hưng Đạo, Quận Hoàn Kiếm, Hà Nội, Việt Nam",
+    bestFor: "Tìm hiểu lịch sử cách mạng, Giáo dục truyền thống, Tham quan di tích, Trải nghiệm tour đêm",
+    highlights: [
+      "Cổng chính vòm đen chữ 'Maison Centrale' biểu tượng giữa trung tâm Hoàn Kiếm",
+      "Không gian trưng bày chân thực về lịch sử đấu tranh cách mạng và các nhân chứng lịch sử",
+      "Chương trình tham quan trải nghiệm 'Đêm thiêng liêng' nổi tiếng thu hút du khách trẻ",
+      "Vị trí thuận lợi ngay gần Hồ Hoàn Kiếm, Nhà thờ Lớn và Văn Miếu Quốc Tử Giám"
+    ],
+    x: 530,
+    y: 430,
+    fullNameEn: "Hoa Lo Prison Relic (Maison Centrale)",
+    descriptionEn: "Constructed in 1896 at 1 Hoa Lo Street in Hoan Kiem District on the site of the former Phu Khanh pottery village, the Hoa Lo Prison Relic (Maison Centrale) is a poignant historical site chronicling the resilience and patriotism of Vietnamese revolutionaries during the colonial and wartime eras. Retaining its iconic black-arched entrance gate, thick yellow stone walls, preserved cellblocks, and memorial courtyard, the museum offers deeply moving daytime exhibitions and celebrated evening heritage tours.",
+    shortIntroEn: "A landmark historical museum at 1 Hoa Lo Street preserving powerful stories of resilience and patriotism in modern Vietnamese history.",
+    neighborhoodEn: "1 Hoa Lo Street, Tran Hung Dao Ward, Hoan Kiem District, Hanoi, Vietnam",
+    bestForEn: "Revolutionary history, Educational visits, Historic landmarks, Evening heritage tours",
+    highlightsEn: [
+      "Iconic black-arched 'Maison Centrale' gate in central Hoan Kiem District",
+      "Preserved cellblocks and authentic archival exhibits of wartime history",
+      "Acclaimed 'Sacred Night' immersive historical tour experience",
+      "Minutes away from Hoan Kiem Lake, St. Joseph's Cathedral, and the Temple of Literature"
+    ],
+    googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Hoa+Lo+Prison+Relic+Hanoi+Vietnam",
+    images: [
+      "/assets/aistudio/image_7af91234.png"
+    ],
+    lat: 21.02535,
+    lng: 105.84655,
+    displayOrder: 22
   }
 ];
 
@@ -1559,7 +1633,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "TL__LCT",
     "from": "TL",
     "to": "LCT",
-    "distanceKm": 5.6,
+    "distanceKm": 6.3,
     "isArterial": false
   },
   {
@@ -1678,7 +1752,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "LCT__TL",
     "from": "LCT",
     "to": "TL",
-    "distanceKm": 5.6,
+    "distanceKm": 6.3,
     "isArterial": false
   },
   {
@@ -1706,7 +1780,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "LCT__HT",
     "from": "LCT",
     "to": "HT",
-    "distanceKm": 2.2,
+    "distanceKm": 1.1,
     "isArterial": true
   },
   {
@@ -1741,7 +1815,7 @@ export const INITIAL_ROUTES: Route[] = [
     "id": "HT__LCT",
     "from": "HT",
     "to": "LCT",
-    "distanceKm": 2.2,
+    "distanceKm": 1.1,
     "isArterial": true
   },
   {
@@ -2233,6 +2307,293 @@ export const INITIAL_ROUTES: Route[] = [
     "to": "BTHN",
     "distanceKm": 8.8,
     "isArterial": false
+  },
+  {
+    "id": "BHD__TL",
+    "from": "BHD",
+    "to": "TL",
+    "distanceKm": 5.7,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__BH",
+    "from": "BHD",
+    "to": "BH",
+    "distanceKm": 1.8,
+    "isArterial": true
+  },
+  {
+    "id": "BHD__CDX",
+    "from": "BHD",
+    "to": "CDX",
+    "distanceKm": 0.5,
+    "isArterial": true
+  },
+  {
+    "id": "BHD__CTL",
+    "from": "BHD",
+    "to": "CTL",
+    "distanceKm": 6.2,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__LCT",
+    "from": "BHD",
+    "to": "LCT",
+    "distanceKm": 1.8,
+    "isArterial": true
+  },
+  {
+    "id": "BHD__LOTTE",
+    "from": "BHD",
+    "to": "LOTTE",
+    "distanceKm": 4.9,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__VMQTG",
+    "from": "BHD",
+    "to": "VMQTG",
+    "distanceKm": 2.6,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__HTTL",
+    "from": "BHD",
+    "to": "HTTL",
+    "distanceKm": 1.3,
+    "isArterial": true
+  },
+  {
+    "id": "BHD__BTDTH",
+    "from": "BHD",
+    "to": "BTDTH",
+    "distanceKm": 6.7,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__PTH",
+    "from": "BHD",
+    "to": "PTH",
+    "distanceKm": 4.3,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__HT",
+    "from": "BHD",
+    "to": "HT",
+    "distanceKm": 1.8,
+    "isArterial": true
+  },
+  {
+    "id": "BHD__CHUAMOTCOT",
+    "from": "BHD",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 2.1,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__LANDMARK72",
+    "from": "BHD",
+    "to": "LANDMARK72",
+    "distanceKm": 9.4,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__LANGLUAVANPHUC",
+    "from": "BHD",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 12.2,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__CVTN",
+    "from": "BHD",
+    "to": "CVTN",
+    "distanceKm": 3.5,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__DHBKHN",
+    "from": "BHD",
+    "to": "DHBKHN",
+    "distanceKm": 5.1,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__NHL",
+    "from": "BHD",
+    "to": "NHL",
+    "distanceKm": 2.7,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__BTQS",
+    "from": "BHD",
+    "to": "BTQS",
+    "distanceKm": 13.7,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__BTHN",
+    "from": "BHD",
+    "to": "BTHN",
+    "distanceKm": 9.8,
+    "isArterial": false
+  },
+  {
+    "id": "BHD__NTL",
+    "from": "BHD",
+    "to": "NTL",
+    "distanceKm": 1.9,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__TL",
+    "from": "HOALO",
+    "to": "TL",
+    "distanceKm": 3.5,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__BH",
+    "from": "HOALO",
+    "to": "BH",
+    "distanceKm": 0.9,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__CDX",
+    "from": "HOALO",
+    "to": "CDX",
+    "distanceKm": 1.9,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__CTL",
+    "from": "HOALO",
+    "to": "CTL",
+    "distanceKm": 6.0,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__LCT",
+    "from": "HOALO",
+    "to": "LCT",
+    "distanceKm": 2.4,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__LOTTE",
+    "from": "HOALO",
+    "to": "LOTTE",
+    "distanceKm": 4.7,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__VMQTG",
+    "from": "HOALO",
+    "to": "VMQTG",
+    "distanceKm": 1.6,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__HTTL",
+    "from": "HOALO",
+    "to": "HTTL",
+    "distanceKm": 1.7,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__BTDTH",
+    "from": "HOALO",
+    "to": "BTDTH",
+    "distanceKm": 7.0,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__PTH",
+    "from": "HOALO",
+    "to": "PTH",
+    "distanceKm": 5.8,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__HT",
+    "from": "HOALO",
+    "to": "HT",
+    "distanceKm": 3.6,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__CHUAMOTCOT",
+    "from": "HOALO",
+    "to": "CHUAMOTCOT",
+    "distanceKm": 2.4,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__LANDMARK72",
+    "from": "HOALO",
+    "to": "LANDMARK72",
+    "distanceKm": 8.8,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__LANGLUAVANPHUC",
+    "from": "HOALO",
+    "to": "LANGLUAVANPHUC",
+    "distanceKm": 12.4,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__CVTN",
+    "from": "HOALO",
+    "to": "CVTN",
+    "distanceKm": 1.3,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__DHBKHN",
+    "from": "HOALO",
+    "to": "DHBKHN",
+    "distanceKm": 2.9,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__NHL",
+    "from": "HOALO",
+    "to": "NHL",
+    "distanceKm": 1.5,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__BTQS",
+    "from": "HOALO",
+    "to": "BTQS",
+    "distanceKm": 12.9,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__BTHN",
+    "from": "HOALO",
+    "to": "BTHN",
+    "distanceKm": 8.8,
+    "isArterial": false
+  },
+  {
+    "id": "HOALO__NTL",
+    "from": "HOALO",
+    "to": "NTL",
+    "distanceKm": 0.6,
+    "isArterial": true
+  },
+  {
+    "id": "HOALO__BHD",
+    "from": "HOALO",
+    "to": "BHD",
+    "distanceKm": 2.2,
+    "isArterial": false
   }
 ];
 
@@ -2257,9 +2618,9 @@ export const PRESET_SELECTIONS: PresetSelectionMap = {
     endId: "LANGLUAVANPHUC"
   },
   subset: {
-    ids: ["TL", "VMQTG", "HTTL", "LCT", "BH", "HT"],
-    label: "Tập hợp 6 điểm Trung tâm – Hồ Tây (Dijkstra)",
-    desc: "THPT Thăng Long → Văn Miếu → Hoàng thành Thăng Long → Lăng Bác → Bờ Hồ → Hồ Tây",
+    ids: ["TL", "VMQTG", "LCT", "BH", "BHD", "HT"],
+    label: "Tập hợp 6 điểm Trung tâm – Bốt Hàng Đậu – Hồ Tây (Dijkstra)",
+    desc: "THPT Thăng Long → Văn Miếu → Lăng Bác → Bờ Hồ → Bốt Hàng Đậu → Hồ Tây",
     startId: "TL",
     endId: "HT"
   }
