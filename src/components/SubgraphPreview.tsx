@@ -375,6 +375,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
   const [showWeights, setShowWeights] = useState(true);
   const [showOtherEdges, setShowOtherEdges] = useState(true);
   const [selectedEdgeInfo, setSelectedEdgeInfo] = useState<{ from: string; to: string; dist: number } | null>(null);
+  const [hoveredEdgeInfo, setHoveredEdgeInfo] = useState<{ key: string; from: string; to: string; dist: number } | null>(null);
   const [scale, setScale] = useState(1);
   const [displayFilter, setDisplayFilter] = useState<'top6' | 'all'>('top6');
   const [miniMapLayout, setMiniMapLayout] = useState<'geographic' | 'topology'>('geographic');
@@ -527,15 +528,15 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
     const count = orderedTourNodeIds.length;
     if (count === 0) return positions;
 
-    const canvasWidth = 720;
-    const canvasHeight = 440;
+    const canvasWidth = layoutStyle === 'geographic' ? 960 : 900;
+    const canvasHeight = layoutStyle === 'geographic' ? 680 : 560;
     const cx = canvasWidth / 2;
-    const cy = canvasHeight / 2 + 6;
+    const cy = layoutStyle === 'geographic' ? 340 : 286;
 
     if (layoutStyle === 'topology') {
       if (currentMode === 'cycle') {
-        const rx = Math.min(270, 160 + count * 15);
-        const ry = Math.min(142, 105 + count * 6);
+        const rx = Math.min(355, 220 + count * 18);
+        const ry = Math.min(188, 130 + count * 8);
 
         orderedTourNodeIds.forEach((id, idx) => {
           const angle = -Math.PI / 2 + (idx * 2 * Math.PI) / count;
@@ -547,8 +548,8 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
       } else {
         // Convex s-t ellipse layout: startId at far left, endId at far right,
         // visited path stops spaced evenly along top arc, unvisited subset nodes along bottom arc
-        const rx = Math.min(265, 175 + count * 15);
-        const ry = Math.min(130, 95 + count * 6);
+        const rx = Math.min(355, 235 + count * 18);
+        const ry = Math.min(176, 122 + count * 8);
         const sId = startId || orderedTourNodeIds[0];
         const eId = endId || effectivePath[effectivePath.length - 1] || orderedTourNodeIds[count - 1];
         const visitedSet = new Set(effectivePath);
@@ -600,15 +601,15 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
       const spanRawX = maxX - minX || 100;
       const spanRawY = maxY - minY || 100;
-      const padX = spanRawX * 0.06;
-      const padY = spanRawY * 0.06;
+      const padX = spanRawX * 0.05;
+      const padY = spanRawY * 0.05;
       const spanX = (spanRawX + padX * 2) || 1;
       const spanY = (spanRawY + padY * 2) || 1;
 
-      const geoMinX = 92;
-      const geoMaxX = 748;
-      const geoMinY = 82;
-      const geoMaxY = 516;
+      const geoMinX = 96;
+      const geoMaxX = 864;
+      const geoMinY = 88;
+      const geoMaxY = 592;
 
       selectedLocations.forEach(loc => {
         const nx = (loc.x - (minX - padX)) / spanX;
@@ -621,8 +622,8 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
       // Gentle repulsion pass so dense central landmarks have plenty of room for photos, labels & weights
       const ids = selectedLocations.map(l => l.id);
-      const minSep = 138;
-      for (let iter = 0; iter < 40; iter++) {
+      const minSep = 165;
+      for (let iter = 0; iter < 45; iter++) {
         for (let i = 0; i < ids.length; i++) {
           for (let j = i + 1; j < ids.length; j++) {
             const p1 = positions[ids[i]];
@@ -697,6 +698,261 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
     return edges;
   }, [selectedIds, routes, effectivePath]);
+
+  // Compute collision-free curved chords & non-overlapping weight label coordinates
+  const edgeVisuals = useMemo(() => {
+    const isGeo = layoutStyle === 'geographic';
+    const svgW = isGeo ? 960 : 900;
+    const svgH = isGeo ? 680 : 560;
+    const cx = svgW / 2;
+    const cy = isGeo ? 340 : 286;
+
+    interface RectBox {
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+    }
+
+    const overlaps = (a: RectBox, b: RectBox) =>
+      !(a.x2 <= b.x1 || a.x1 >= b.x2 || a.y2 <= b.y1 || a.y1 >= b.y2);
+
+    const overlapArea = (a: RectBox, b: RectBox) => {
+      const ix = Math.max(0, Math.min(a.x2, b.x2) - Math.max(a.x1, b.x1));
+      const iy = Math.max(0, Math.min(a.y2, b.y2) - Math.max(a.y1, b.y1));
+      return ix * iy;
+    };
+
+    const occupied: RectBox[] = [];
+    const midY = cy;
+
+    // Reserve all node circles & label pills so badges never cover them
+    orderedTourNodeIds.forEach(id => {
+      const pos = graphNodePositions[id];
+      if (!pos) return;
+      const rPad = isGeo ? 34 : 30;
+      occupied.push({
+        x1: pos.x - rPad,
+        y1: pos.y - rPad,
+        x2: pos.x + rPad,
+        y2: pos.y + rPad,
+      });
+      const isLower = pos.y > midY;
+      const ly = isLower ? pos.y + (isGeo ? 33 : 30) : pos.y - (isGeo ? 58 : 54);
+      const lh = isGeo ? 26 : 24;
+      const lw = isGeo ? 60 : 55;
+      occupied.push({
+        x1: pos.x - lw,
+        y1: ly,
+        x2: pos.x + lw,
+        y2: ly + lh,
+      });
+    });
+
+    const distPointToSegment = (px: number, py: number, ax: number, ay: number, bx: number, by: number) => {
+      const dx = bx - ax;
+      const dy = by - ay;
+      const lenSq = dx * dx + dy * dy;
+      if (lenSq === 0) return Math.hypot(px - ax, py - ay);
+      const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq));
+      return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+    };
+
+    const evalQuad = (
+      p1: { x: number; y: number },
+      ctrl: { x: number; y: number } | null,
+      p2: { x: number; y: number },
+      t: number
+    ) => {
+      if (!ctrl) {
+        return {
+          x: p1.x + (p2.x - p1.x) * t,
+          y: p1.y + (p2.y - p1.y) * t,
+        };
+      }
+      const mt = 1 - t;
+      return {
+        x: mt * mt * p1.x + 2 * mt * t * ctrl.x + t * t * p2.x,
+        y: mt * mt * p1.y + 2 * mt * t * ctrl.y + t * t * p2.y,
+      };
+    };
+
+    const placeBadge = (
+      p1: { x: number; y: number },
+      ctrl: { x: number; y: number } | null,
+      p2: { x: number; y: number },
+      w: number,
+      h: number,
+      preferredTs: number[]
+    ) => {
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+      const normalOffsets = [0, -14, 14, -26, 26];
+
+      let bestPoint = evalQuad(p1, ctrl, p2, preferredTs[0]);
+      let minPenalty = Infinity;
+
+      for (const nOff of normalOffsets) {
+        for (const t of preferredTs) {
+          const pt = evalQuad(p1, ctrl, p2, t);
+          const cxCand = pt.x + nx * nOff;
+          const cyCand = pt.y + ny * nOff;
+          const box: RectBox = {
+            x1: cxCand - w / 2 - 3,
+            y1: cyCand - h / 2 - 3,
+            x2: cxCand + w / 2 + 3,
+            y2: cyCand + h / 2 + 3,
+          };
+
+          if (box.x1 < 12 || box.x2 > svgW - 12 || box.y1 < 12 || box.y2 > svgH - 12) {
+            continue;
+          }
+
+          let penalty = Math.abs(nOff) * 0.4 + Math.abs(t - 0.5) * 18;
+          let hits = 0;
+          for (const occ of occupied) {
+            if (overlaps(box, occ)) {
+              hits += 1;
+              penalty += 500 + overlapArea(box, occ) * 2;
+            }
+          }
+
+          if (hits === 0 && nOff === 0) {
+            occupied.push(box);
+            return { x: Math.round(cxCand), y: Math.round(cyCand) };
+          }
+          if (penalty < minPenalty) {
+            minPenalty = penalty;
+            bestPoint = { x: cxCand, y: cyCand };
+          }
+        }
+      }
+
+      occupied.push({
+        x1: bestPoint.x - w / 2 - 3,
+        y1: bestPoint.y - h / 2 - 3,
+        x2: bestPoint.x + w / 2 + 3,
+        y2: bestPoint.y + h / 2 + 3,
+      });
+      return { x: Math.round(bestPoint.x), y: Math.round(bestPoint.y) };
+    };
+
+    const tourBadges: Record<number, { x: number; y: number }> = {};
+    segments.forEach((seg, idx) => {
+      const p1 = graphNodePositions[seg.fromLoc.id];
+      const p2 = graphNodePositions[seg.toLoc.id];
+      if (!p1 || !p2) return;
+      const bw = isGeo ? 66 : 58;
+      const bh = isGeo ? 25 : 22;
+      tourBadges[idx] = placeBadge(p1, null, p2, bw, bh, [0.5, 0.42, 0.58, 0.34, 0.66]);
+    });
+
+    const otherEdges = subgraphEdges.filter(e => !e.isTourPath);
+    const otherVisuals: Record<string, {
+      d: string;
+      badgePos: { x: number; y: number };
+      badgeText: string;
+      badgeWidth: number;
+      badgeHeight: number;
+      isDirectStartEnd: boolean;
+    }> = {};
+
+    const sId = startId || 'TL';
+    const eId = endId || effectivePath[effectivePath.length - 1];
+    const isStartEndEdge = (from: string, to: string) =>
+      currentMode !== 'cycle' && ((from === sId && to === eId) || (from === eId && to === sId));
+
+    // Sort so direct start-end link gets prime placement first, followed by shorter inner chords
+    const sortedOther = [...otherEdges].sort((a, b) => {
+      const aSE = isStartEndEdge(a.from, a.to) ? 0 : 1;
+      const bSE = isStartEndEdge(b.from, b.to) ? 0 : 1;
+      if (aSE !== bSE) return aSE - bSE;
+      return a.distanceKm - b.distanceKm;
+    });
+
+    sortedOther.forEach((edge, idx) => {
+      const p1 = graphNodePositions[edge.from];
+      const p2 = graphNodePositions[edge.to];
+      if (!p1 || !p2) return;
+
+      const directSE = isStartEndEdge(edge.from, edge.to);
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const nx = -dy / len;
+      const ny = dx / len;
+      const midX = (p1.x + p2.x) / 2;
+      const midY = (p1.y + p2.y) / 2;
+
+      let ctrl: { x: number; y: number } | null = null;
+
+      if (!directSE) {
+        const passesNearCenter = !isGeo && Math.hypot(midX - cx, midY - cy) < 115;
+        const hitsOtherNode = orderedTourNodeIds.some(nid => {
+          if (nid === edge.from || nid === edge.to) return false;
+          const np = graphNodePositions[nid];
+          return np ? distPointToSegment(np.x, np.y, p1.x, p1.y, p2.x, p2.y) < 38 : false;
+        });
+
+        if (passesNearCenter || hitsOtherNode) {
+          // Pick bow side away from center (or alternating for center-crossing chords)
+          const candPos = { x: midX + nx * 125, y: midY + ny * 125 };
+          const candNeg = { x: midX - nx * 125, y: midY - ny * 125 };
+          const dPos = Math.hypot(candPos.x - cx, candPos.y - cy);
+          const dNeg = Math.hypot(candNeg.x - cx, candNeg.y - cy);
+          if (Math.abs(dPos - dNeg) > 12) {
+            ctrl = dPos > dNeg ? candPos : candNeg;
+          } else {
+            ctrl = idx % 2 === 0 ? candPos : candNeg;
+          }
+        }
+      }
+
+      const d = ctrl
+        ? `M ${p1.x} ${p1.y} Q ${Math.round(ctrl.x)} ${Math.round(ctrl.y)} ${p2.x} ${p2.y}`
+        : `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
+
+      const badgeText = `${edge.distanceKm} km`;
+      const badgeWidth = isGeo ? 58 : 50;
+      const badgeHeight = isGeo ? 20 : 18;
+
+      const badgePos = placeBadge(
+        p1,
+        ctrl,
+        p2,
+        badgeWidth,
+        badgeHeight,
+        directSE
+          ? [0.5, 0.36, 0.64, 0.28, 0.72]
+          : [0.5, 0.37, 0.63, 0.28, 0.72, 0.43, 0.57]
+      );
+
+      otherVisuals[edge.id] = {
+        d,
+        badgePos,
+        badgeText,
+        badgeWidth,
+        badgeHeight,
+        isDirectStartEnd: directSE,
+      };
+    });
+
+    return { tourBadges, otherVisuals };
+  }, [
+    layoutStyle,
+    orderedTourNodeIds,
+    graphNodePositions,
+    segments,
+    subgraphEdges,
+    startId,
+    endId,
+    effectivePath,
+    currentMode,
+    locationMap,
+  ]);
 
   // Min and Max distance among all enumerated cycles
   const minDist = alternativePlans[0]?.totalDistanceKm || 0;
@@ -1003,7 +1259,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
         {/* Subgraph SVG Canvas */}
         <div className={`relative w-full bg-gradient-to-b from-[#fefcf8] via-[#fbf7ee] to-[#f4eee1] rounded-2xl border border-[#ded5c7] overflow-hidden flex items-center justify-center select-none shadow-inner transition-all ${
-          layoutStyle === 'geographic' ? 'h-[580px] sm:h-[640px]' : 'h-[460px]'
+          layoutStyle === 'geographic' ? 'h-[620px] sm:h-[680px]' : 'h-[540px] sm:h-[600px]'
         }`}>
           <div 
             className="absolute inset-0 opacity-20 pointer-events-none"
@@ -1015,7 +1271,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
           <svg 
             className="w-full h-full transition-transform duration-200" 
-            viewBox={layoutStyle === 'geographic' ? '0 0 840 600' : '0 0 720 440'}
+            viewBox={layoutStyle === 'geographic' ? '0 0 960 680' : '0 0 900 560'}
             style={{ transform: `scale(${scale})` }}
           >
             <defs>
@@ -1039,57 +1295,59 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               </marker>
             </defs>
 
-            {/* 1. Draw non-tour background edges with Distance Badges & Interactive Click */}
+            {/* 1. Draw non-tour background edges with Non-Overlapping Distance Badges & Hover Highlight */}
             {showOtherEdges && (
               <g className="other-edges">
                 {subgraphEdges.filter(e => !e.isTourPath).map(edge => {
-                  const p1 = graphNodePositions[edge.from];
-                  const p2 = graphNodePositions[edge.to];
-                  if (!p1 || !p2) return null;
+                  const visual = edgeVisuals.otherVisuals[edge.id];
+                  if (!visual) return null;
 
-                  const midX = (p1.x + p2.x) / 2;
-                  const midY = (p1.y + p2.y) / 2;
+                  const isHovered = hoveredEdgeInfo?.key === edge.id;
+                  const anyHovered = hoveredEdgeInfo !== null;
+                  const fromLoc = locationMap.get(edge.from);
+                  const toLoc = locationMap.get(edge.to);
 
                   return (
                     <g 
                       key={edge.id}
                       className="cursor-pointer group"
+                      onMouseEnter={() => setHoveredEdgeInfo({ key: edge.id, from: edge.from, to: edge.to, dist: edge.distanceKm })}
+                      onMouseLeave={() => setHoveredEdgeInfo(null)}
                       onClick={() => setSelectedEdgeInfo({ from: edge.from, to: edge.to, dist: edge.distanceKm })}
+                      opacity={anyHovered && !isHovered ? 0.32 : 1}
                     >
-                      <line
-                        x1={p1.x}
-                        y1={p1.y}
-                        x2={p2.x}
-                        y2={p2.y}
-                        stroke="#cbd5e1"
-                        strokeWidth={layoutStyle === 'geographic' ? 2.1 : 1.8}
-                        strokeDasharray="4 4"
-                        opacity={0.85}
-                        className="group-hover:stroke-amber-500 group-hover:stroke-[2.5px] transition-all"
+                      <path
+                        d={visual.d}
+                        fill="none"
+                        stroke={isHovered ? '#4f46e5' : '#64748b'}
+                        strokeWidth={isHovered ? 3.2 : (layoutStyle === 'geographic' ? 2.4 : 2.1)}
+                        strokeDasharray="6 4"
+                        opacity={isHovered ? 1 : 0.84}
+                        className="transition-all"
                       />
                       {showWeights && (
-                        <g transform={`translate(${midX}, ${midY})`}>
+                        <g transform={`translate(${visual.badgePos.x}, ${visual.badgePos.y})`}>
+                          <title>{`${fromLoc?.label || edge.from} ↔ ${toLoc?.label || edge.to}: ${edge.distanceKm} km`}</title>
                           <rect
-                            x={layoutStyle === 'geographic' ? -25 : -22}
-                            y={layoutStyle === 'geographic' ? -10.5 : -9}
-                            width={layoutStyle === 'geographic' ? 50 : 44}
-                            height={layoutStyle === 'geographic' ? 21 : 18}
+                            x={-visual.badgeWidth / 2}
+                            y={-visual.badgeHeight / 2}
+                            width={visual.badgeWidth}
+                            height={visual.badgeHeight}
                             rx={10}
-                            fill="#ffffff"
-                            stroke="#cbd5e1"
-                            strokeWidth={1.3}
-                            className="group-hover:fill-amber-50 group-hover:stroke-amber-400 shadow-2xs transition-colors"
+                            fill={isHovered ? '#eef2ff' : '#ffffff'}
+                            stroke={isHovered ? '#4f46e5' : '#64748b'}
+                            strokeWidth={isHovered ? 1.6 : 1.35}
+                            className="transition-colors"
                           />
                           <text
                             x={0}
                             y={layoutStyle === 'geographic' ? 4 : 3.5}
                             textAnchor="middle"
-                            fontSize={layoutStyle === 'geographic' ? 11 : 9.5}
+                            fontSize={layoutStyle === 'geographic' ? 10.5 : 10}
                             fontWeight="800"
-                            fill="#475569"
-                            className="group-hover:fill-amber-900"
+                            fill={isHovered ? '#312e81' : '#334155'}
                           >
-                            {edge.distanceKm}k
+                            {visual.badgeText}
                           </text>
                         </g>
                       )}
@@ -1106,11 +1364,18 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 const p2 = graphNodePositions[seg.toLoc.id];
                 if (!p1 || !p2) return null;
 
-                const midX = (p1.x + p2.x) / 2;
-                const midY = (p1.y + p2.y) / 2;
+                const badgePt = edgeVisuals.tourBadges[idx] || {
+                  x: (p1.x + p2.x) / 2,
+                  y: (p1.y + p2.y) / 2,
+                };
+                const segKey = `tour-${seg.fromLoc.id}-${seg.toLoc.id}-${idx}`;
 
                 return (
-                  <g key={`tour-seg-${seg.fromLoc.id}-${seg.toLoc.id}-${idx}`}>
+                  <g
+                    key={segKey}
+                    onMouseEnter={() => setHoveredEdgeInfo({ key: segKey, from: seg.fromLoc.id, to: seg.toLoc.id, dist: seg.distanceKm })}
+                    onMouseLeave={() => setHoveredEdgeInfo(null)}
+                  >
                     <line
                       x1={p1.x}
                       y1={p1.y}
@@ -1135,14 +1400,15 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
 
                     {showWeights && (
                       <g
-                        transform={`translate(${midX}, ${midY})`}
+                        transform={`translate(${badgePt.x}, ${badgePt.y})`}
                         onClick={() => setSelectedEdgeInfo({ from: seg.fromLoc.id, to: seg.toLoc.id, dist: seg.distanceKm })}
                         className="cursor-pointer group"
                       >
+                        <title>{`${seg.fromLoc.label} ➔ ${seg.toLoc.label}: ${seg.distanceKm} km`}</title>
                         <rect
-                          x={layoutStyle === 'geographic' ? -32 : -28}
+                          x={layoutStyle === 'geographic' ? -33 : -29}
                           y={layoutStyle === 'geographic' ? -12.5 : -11}
-                          width={layoutStyle === 'geographic' ? 64 : 56}
+                          width={layoutStyle === 'geographic' ? 66 : 58}
                           height={layoutStyle === 'geographic' ? 25 : 22}
                           rx={12}
                           fill="#133654"
@@ -1182,7 +1448,7 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
                 const isLast = (id === endId || id === effectivePath[effectivePath.length - 1]) && currentMode !== 'cycle';
                 const photoUrl = loc.imageUrl || loc.images?.[0];
                 const ringColor = isSchool ? '#f59e0b' : isLast ? '#e11d48' : isOnPath ? '#059669' : '#64748b';
-                const midY = isGeo ? 300 : 226;
+                const midY = isGeo ? 340 : 286;
                 const isLowerHalf = pos.y > midY;
                 const nodeRadius = isGeo ? 29 : 26;
                 const photoSize = isGeo ? 54 : 48;
@@ -1313,6 +1579,17 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
               })}
             </g>
           </svg>
+
+          {/* Live Hover Readout Pill (top-left) */}
+          {hoveredEdgeInfo && (
+            <div className="absolute top-3 left-3 bg-[#133654]/95 text-white px-3 py-1.5 rounded-xl border border-amber-400/70 shadow-lg text-xs font-bold flex items-center gap-2 z-30 pointer-events-none">
+              <span className="text-amber-300">🛣️</span>
+              <span>
+                {locationMap.get(hoveredEdgeInfo.from)?.label || hoveredEdgeInfo.from} ↔ {locationMap.get(hoveredEdgeInfo.to)?.label || hoveredEdgeInfo.to}:
+              </span>
+              <span className="text-amber-300 font-black">{hoveredEdgeInfo.dist} km</span>
+            </div>
+          )}
 
           {/* Floating Edge Info Card if clicked */}
           {selectedEdgeInfo && (
