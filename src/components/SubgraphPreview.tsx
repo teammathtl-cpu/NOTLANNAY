@@ -621,6 +621,13 @@ export const SubgraphPreview: React.FC<SubgraphPreviewProps> = ({
           };
         });
       }
+
+      // Swap Lăng Bác (LCT) and Bốt Hàng Đậu (BHD) positions in topology view
+      if (positions['LCT'] && positions['BHD']) {
+        const tmp = positions['LCT'];
+        positions['LCT'] = positions['BHD'];
+        positions['BHD'] = tmp;
+      }
     } else {
       // Geographic mode: project from real GPS (lng, lat) blended slightly with rank spread
       // so narrow corridors or distant outliers never squish central landmarks, then relax evenly
